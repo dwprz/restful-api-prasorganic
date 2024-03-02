@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  username     String    @id @db.VarChar(100)
+  full_name    String    @db.VarChar(100)
+  profile      String    @db.VarChar(300)
+  phone_number String?   @db.VarChar(20)
+  email        String?   @db.VarChar(100)
+  password     String    @db.VarChar(100)
+  Cart         Cart[]
+  Address      Address[]
+  Order        Order[]
+
+  @@map("users")
+}
+
+model Product {
+  id            Int     @id @default(autoincrement())
+  name          String  @db.VarChar(100)
+  image         String  @db.VarChar(300)
+  category      String  @db.VarChar(20)
+  rate          Int?    @db.UnsignedTinyInt
+  sold          Int?    @db.UnsignedMediumInt
+  initial_price Int     @db.UnsignedMediumInt
+  stock         Int     @db.UnsignedMediumInt
+  description   String? @db.TinyText
+  Cart          Cart[]
+  Tag           Tag[]
+
+  @@map("products")
+}
+
+model Tag {
+  id         Int     @id @default(autoincrement())
+  name       String  @db.VarChar(20)
+  id_product Int
+  Product    Product @relation(fields: [id_product], references: [id])
+
+  @@map("tags")
+}
+
+model Cart {
+  id          Int     @id @default(autoincrement())
+  quantity    Int     @db.UnsignedSmallInt
+  total_price Int     @db.UnsignedInt
+  username    String  @db.VarChar(100)
+  product_id  Int
+  order_id    Int?
+  product     Product @relation(fields: [product_id], references: [id])
+  user        User    @relation(fields: [username], references: [username])
+  order       Order?  @relation(fields: [order_id], references: [id])
+
+  @@map("carts")
+}
+
+model Address {
+  id          Int     @id @default(autoincrement())
+  street      String  @db.VarChar(100)
+  city        String  @db.VarChar(100)
+  province    String  @db.VarChar(100)
+  country     String? @db.VarChar(50)
+  postal_code String  @db.VarChar(10)
+  username    String  @db.VarChar(100)
+  user        User    @relation(fields: [username], references: [username])
+  Order       Order[]
+
+  @@map("addresses")
+}
+
+model Order {
+  id         Int     @id @default(autoincrement())
+  username   String  @db.VarChar(100)
+  address_id Int
+  user       User    @relation(fields: [username], references: [username])
+  addess     Address @relation(fields: [address_id], references: [id])
+  Cart       Cart[]
+
+  @@map("orders")
+}

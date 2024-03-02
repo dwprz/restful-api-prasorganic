@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  mysql-prasorganic-dummy:
+    image: mysql:8.2.0
+    container_name: mysql-prasorganic-dummy
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rahasia
