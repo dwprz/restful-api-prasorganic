@@ -12,7 +12,7 @@ const create = Joi.object({
   stock: Joi.number().max(16000000).min(1).integer().required(),
   description: Joi.string().trim().max(300).min(5).pattern(pattern).optional(),
   tags: Joi.array()
-    .items(Joi.string().alphanum().min(3).max(30))
+    .items(Joi.string().pattern(pattern).min(3).max(30))
     .max(3)
     .required(),
 });
