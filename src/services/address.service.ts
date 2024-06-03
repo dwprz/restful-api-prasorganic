@@ -1,112 +1,34 @@
-// import prismaClient from "../apps/database.app";
-// import ResponseError from "../error/response.error";
-// import { AddressInput, AddressUpdateInput } from "../interfaces/address";
-// import { addressValidation } from "../validations/address.validation";
-// import validation from "../validations/validation";
+import { AddressInput, AddressUpdate } from "../interfaces/address";
+import validation from "../validations/validation";
+import { AddressValidation } from "../validations/address.validation";
+import { AddressUtil } from "../utils/address.util";
 
-// const create = async (data: AddressInput) => {
-//   data = validation(addressValidation.create, data);
+export class AddressService {
+  static async create(data: AddressInput) {
+    validation(AddressValidation.create, data);
 
-//   try {
-//     await prismaClient.$queryRaw`BEGIN TRANSACTION;`;
+    const address = await AddressUtil.create(data);
+    return address;
+  }
 
-//     if (data.is_main_address) {
-//       await prismaClient.address.updateMany({
-//         where: {
-//           user_id: data.user_id,
-//           is_main_address: true,
-//         },
-//         data: {
-//           is_main_address: false,
-//         },
-//       });
-//     }
+  static async get(user_id: number) {
+    validation(AddressValidation.user_id, user_id);
 
-//     const address = await prismaClient.address.create({
-//       data: data,
-//     });
+    const addresses = await AddressUtil.findManyByUserId(user_id);
+    return addresses;
+  }
 
-//     await prismaClient.$queryRaw`COMMIT TRANSACTION;`;
-//     return address;
-//   } catch (error) {
-//     await prismaClient.$queryRaw`ROLLBACK TRANSACTION;`;
-//     throw new ResponseError(400, "failed to create address");
-//   }
-// };
+  static async update(data: AddressUpdate) {
+    validation(AddressValidation.update, data);
 
-// const get = async (user_id: number) => {
-//   try {
-//     const addresses = await prismaClient.address.findMany({
-//       where: {
-//         user_id: user_id,
-//       },
-//     });
+    const address = await AddressUtil.updateById(data);
+    return address;
+  }
 
-//     return addresses;
-//   } catch (error) {
-//     throw new ResponseError(400, "failed get addresses");
-//   }
-// };
+  static async delete(address_id: number) {
+    validation(AddressValidation.address_id, address_id);
 
-// const update = async (data: AddressUpdateInput) => {
-//   const { address_id, user_id } = validation(addressValidation.update, data);
+    await AddressUtil.deleteById(address_id);
+  }
+}
 
-//   try {
-//     await prismaClient.$queryRaw`BEGIN TRANSACTION;`;
-
-//     if (data.is_main_address) {
-//       await prismaClient.address.updateMany({
-//         where: {
-//           user_id: data.user_id,
-//           is_main_address: true,
-//         },
-//         data: {
-//           is_main_address: false,
-//         },
-//       });
-//     }
-
-//     await prismaClient.address.update({
-//       where: {
-//         address_id: address_id,
-//         user_id: user_id,
-//       },
-//       data: data,
-//     });
-
-//     const addresses = await prismaClient.address.findMany({
-//       where: {
-//         user_id: user_id,
-//       },
-//     });
-
-//     await prismaClient.$queryRaw`COMMIT TRANSACTION;`;
-//     return addresses;
-//   } catch (error) {
-//     await prismaClient.$queryRaw`ROLLBACK TRANSACTION;`;
-//     console.log(error);
-//     throw new ResponseError(400, "failed to update address");
-//   }
-// };
-
-// const remove = async (user_id: number, address_id: number) => {
-//   try {
-//     await prismaClient.address.delete({
-//       where: {
-//         address_id: address_id,
-//         user_id: user_id,
-//       },
-//     });
-
-//     return "success delete address";
-//   } catch (error) {
-//     throw new ResponseError(400, "failed to delete address");
-//   }
-// };
-
-// export const addressService = {
-//   create,
-//   get,
-//   update,
-//   remove,
-// };

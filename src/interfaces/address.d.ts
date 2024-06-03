@@ -11,7 +11,7 @@ export interface AddressInput {
   is_main_address: boolean;
 }
 
-export interface AddressUpdateInput {
+export interface AddressUpdate {
   address_id: number;
   user_id: number;
   address_owner?: string;

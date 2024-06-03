@@ -5,7 +5,11 @@ import "dotenv/config";
 import { EnvHelper } from "./env.helper";
 
 export class FileHelper {
-  static deleteByUrl(url: string) {
+  static deleteByUrl(url: string | undefined) {
+    if (!url) {
+      throw new ErrorResponse(400, "url is undefined");
+    }
+
     const main_folder = url.split("/")[3];
     const sub_folder = url.split("/")[4];
     const file_name = url.split("/")[5];
