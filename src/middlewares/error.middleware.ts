@@ -1,22 +1,22 @@
-import { NextFunction, Request, Response } from "express";
-import ResponseError from "../error/error";
-
-const errorMiddleware = (
+import { Request, Response, NextFunction } from "express";
+import ResponseError from "../error/response.error";
+function errorMiddleware(
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  if (!err) {
-    next();
-    return;
-  }
+) {
+  let status = 500;
+  let message = "internal server error. please try again later";
 
   if (err instanceof ResponseError) {
-    res.status(err.status).json({ errors: err.message }).end();
-  } else {
-    res.status(500).json({ errors: err.message }).end();
+    status = err.status;
+    message = err.message;
   }
-};
+
+  console.log(`status: ${status}, message: ${err.message} | this log error`); 
+
+  res.status(status).json({ error: message });
+}
 
 export default errorMiddleware;

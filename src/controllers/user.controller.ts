@@ -1,0 +1,108 @@
+import { NextFunction, Request, Response } from "express";
+import { UserRequest, UserRole } from "../interfaces/user";
+import { UserService } from "../services/user.service";
+import { FileHelper } from "../helpers/file.helper";
+
+export class UserController {
+  static async getCurrent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = (req as UserRequest).userData;
+      const result = await UserService.getByEmail(email);
+      res.status(200).json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getByRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const page = Number(req.query["page"]);
+      const role = req.query["role"] as UserRole;
+
+      const { data, paging } = await UserService.getByRole({ page, role });
+      res.status(200).json({ data, paging });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getByFullName(req: Request, res: Response, next: NextFunction) {
+    try {
+      const full_name = req.params["fullName"];
+      const role = req.query["role"] as UserRole;
+      const page = Number(req.query["page"]);
+
+      const { data, paging } = await UserService.getByFullName({
+        full_name,
+        role,
+        page,
+      });
+
+      res.status(200).json({ data, paging });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = (req as UserRequest).userData;
+
+      const result = await UserService.updateProfile({
+        ...req.body,
+        email,
+      });
+
+      res.status(200).json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updatePhotoProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { email } = (req as UserRequest).userData;
+
+      const result = await UserService.updatePhotoProfile({
+        ...req.body,
+        email,
+      });
+
+      res.status(200).json({ data: result });
+    } catch (error) {
+      FileHelper.deleteByPath(req.file?.path);
+      next(error);
+    }
+  }
+
+  static async updatePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = (req as UserRequest).userData;
+      await UserService.updatePassword({ ...req.body, email });
+
+      res.status(200).json({ message: "updated password successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = (req as UserRequest).userData;
+
+      const { user, access_token } = await UserService.updateEmail({
+        ...req.body,
+        email,
+      });
+
+      res.cookie("access_token", access_token, { httpOnly: true });
+      res.status(200).json({ data: user });
+    } catch (error) {
+      next(error);
+    }
+  }
+}

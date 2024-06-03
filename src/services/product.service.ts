@@ -1,0 +1,213 @@
+import ResponseError from "../error/response.error";
+import {
+  ProductInput,
+  ProductQuery,
+  ProductUpdate,
+  ProductUpdateImage,
+} from "../interfaces/product";
+import { ProductValidation } from "../validations/product.validation";
+import validation from "../validations/validation";
+import { ProductUtil } from "../utils/product.util";
+import { PagingHelper } from "../helpers/paging.helper";
+import { FileHelper } from "../helpers/file.helper";
+import { CategoryUtil } from "../utils/category.util";
+
+export class ProductService {
+  static async create(data: ProductInput) {
+    const { product_name } = validation(ProductValidation.create, data);
+
+    const existing_product = await ProductUtil.findByFields({
+      product_name: product_name,
+    });
+
+    if (existing_product) {
+      throw new ResponseError(409, "product already exist");
+    }
+
+    const product = await ProductUtil.createWithCategories(data);
+    return product;
+  }
+
+  static async getRandom(page: number) {
+    page = validation(ProductValidation.page, page);
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
+
+    const products = await ProductUtil.findManyRandom(limit, offset);
+
+    const total_products = await ProductUtil.count();
+
+    const result = PagingHelper.formatPagedData(
+      products,
+      total_products,
+      page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async getByName(data: ProductQuery) {
+    const { page, name } = validation(ProductValidation.productQuery, data);
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
+
+    const products = await ProductUtil.findManyByName(name!, limit, offset);
+    const total_products = await ProductUtil.countByName(name!);
+
+    const result = PagingHelper.formatPagedData(
+      products,
+      total_products,
+      page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async getByCategories(data: ProductQuery) {
+    const { page, categories } = validation(
+      ProductValidation.productQuery,
+      data
+    );
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
+
+    const products = await ProductUtil.findManyByCategories(
+      categories!,
+      limit,
+      offset
+    );
+
+    const total_products = await ProductUtil.countByCategories(categories!);
+
+    const result = PagingHelper.formatPagedData(
+      products,
+      total_products,
+      page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async getRandomWithCategories(page: number) {
+    page = validation(ProductValidation.page, page);
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
+
+    const products = await ProductUtil.findManyRandomWithCategories(
+      limit,
+      offset
+    );
+
+    const total_products = await ProductUtil.count();
+
+    const result = PagingHelper.formatPagedData(
+      products,
+      total_products,
+      page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async getWithCategoriesByCategories(data: ProductQuery) {
+    const { page, categories } = validation(
+      ProductValidation.productQuery,
+      data
+    );
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
+
+    const products = await ProductUtil.findManyWithCategoriesByCategories(
+      categories!,
+      limit,
+      offset
+    );
+
+    const total_products = await ProductUtil.countByCategories(categories!);
+
+    const result = PagingHelper.formatPagedData(
+      products,
+      total_products,
+      page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async getDeleted(page: number) {
+    validation(ProductValidation.page, page);
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
+
+    const products = await ProductUtil.findManyDeleted(limit, offset);
+    const total_products = await ProductUtil.countDeleted();
+
+    const result = PagingHelper.formatPagedData(
+      products,
+      total_products,
+      page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async restore(product_id: number) {
+    validation(ProductValidation.ptoduct_id, product_id);
+
+    const product = await ProductUtil.restore(product_id);
+    return product;
+  }
+
+  static async update(data: ProductUpdate) {
+    const { product_id, ...product_request } = validation(
+      ProductValidation.update,
+      data
+    );
+
+    const product = await ProductUtil.updateById(product_request, product_id);
+    return product;
+  }
+
+  static async updateImage(data: ProductUpdateImage) {
+    const { image, new_image, product_id } = validation(
+      ProductValidation.updateImage,
+      data
+    );
+
+    if (image) {
+      FileHelper.deleteByUrl(image);
+    }
+
+    const product = await ProductUtil.updateById(
+      { image: new_image },
+      product_id
+    );
+
+    return product;
+  }
+
+  static async updateCategories(data: any) {
+    const { product_id, categories, new_categories } = validation(
+      ProductValidation.updateCategories,
+      data
+    );
+
+    await CategoryUtil.update(categories, new_categories, product_id);
+
+    const product = await ProductUtil.findWithCategoriesById(product_id);
+
+    return product;
+  }
+
+  static async delete(product_id: number) {
+    product_id = validation(ProductValidation.ptoduct_id, product_id);
+
+    await ProductUtil.delete(product_id);
+  }
+}

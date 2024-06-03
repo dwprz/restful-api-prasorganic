@@ -1,0 +1,16 @@
+import { User } from "../interfaces/user";
+
+export class UserHelper {
+  static transform(users: User[]) {
+    if (!users.length) {
+      return [];
+    }
+
+    const result = users.map((user) => {
+      const { password, refresh_token, ...rest } = user;
+      return rest;
+    });
+
+    return result;
+  }
+}

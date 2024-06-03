@@ -1,43 +1,89 @@
-import Joi from "joi";
+import z, { ZodType } from "zod";
 
-const pattern = /^[^<>/()#=|&!?:;]*$/;
+export class ProductValidation {
+  private static pattern = /^[^<>/()#=|&!?:;]*$/;
 
-const create = Joi.object({
-  name: Joi.string().trim().max(100).min(3).pattern(pattern).required(),
-  image: Joi.string().trim().max(250).min(3).required(),
-  category: Joi.string().trim().max(20).min(3).required(),
-  rate: Joi.number().max(5).min(1).optional(),
-  sold: Joi.number().max(16000000).min(1).integer().optional(),
-  initial_price: Joi.number().max(16000000).min(1000).integer().required(),
-  stock: Joi.number().max(16000000).min(1).integer().required(),
-  description: Joi.string().trim().max(300).min(5).pattern(pattern).optional(),
-  tags: Joi.array()
-    .items(Joi.string().pattern(pattern).min(3).max(30))
-    .max(3)
-    .required(),
-});
+  static page: ZodType = z.number().min(1).max(100).default(1);
 
-const get = Joi.object({
-  page: Joi.number().min(1).max(20).positive().integer().default(1),
-  category: Joi.string().trim().max(10).pattern(pattern).optional(),
-  search: Joi.alternatives(
-    Joi.array().items(Joi.string().alphanum().min(3).max(30)).max(3),
-    Joi.string().alphanum().min(3).max(30)
-  ).optional(),
-});
+  static ptoduct_id: ZodType = z.number().min(1).int();
 
-const update = Joi.object({
-  name: Joi.string().trim().max(100).min(3).pattern(pattern).optional(),
-  image: Joi.string().trim().max(100).min(3).optional(),
-  rate: Joi.number().max(5).min(1).optional(),
-  sold: Joi.number().max(16000000).min(1).integer().optional(),
-  initial_price: Joi.number().max(16000000).min(1000).integer().optional(),
-  stock: Joi.number().max(16000000).min(1).integer().optional(),
-  description: Joi.string().trim().max(300).min(5).pattern(pattern).optional(),
-});
+  static create: ZodType = z
+    .object({
+      product_name: z.string().trim().max(100).min(3).regex(this.pattern),
+      image: z.string().trim().max(250).min(3),
+      price: z.number().max(16000000).min(1000),
+      stock: z.number().max(16000000).min(1).int(),
+      description: z
+        .string()
+        .trim()
+        .max(300)
+        .min(5)
+        .regex(this.pattern)
+        .optional(),
+      categories: z.union([
+        z.array(z.string().max(20).min(3).regex(this.pattern)).min(1).max(10),
+        z.string().max(20).min(3).regex(this.pattern),
+      ]),
+    })
+    .strict();
 
-export const productValidate = {
-  create,
-  update,
-  get,
-};
+  static productQuery: ZodType = z
+    .object({
+      page: z.number().min(1).max(100).default(1),
+      name: z.string().max(20).regex(this.pattern).optional(),
+      categories: z
+        .union([
+          z.array(z.string().min(3).max(20).regex(this.pattern)).min(1).max(3),
+          z.string().min(3).max(20).regex(this.pattern),
+        ])
+        .optional(),
+    })
+    .strict();
+
+  static update: ZodType = z
+    .object({
+      product_id: z.number().min(1).int(),
+      product_name: z
+        .string()
+        .trim()
+        .min(3)
+        .max(100)
+        .regex(this.pattern)
+        .optional(),
+      rate: z.number().max(5).nullable().optional(),
+      sold: z.number().nullable().optional(),
+      price: z.number().min(1000).max(15000000).optional(),
+      stock: z.number().max(15000000).int().optional(),
+      description: z
+        .string()
+        .trim()
+        .max(300)
+        .min(5)
+        .regex(this.pattern)
+        .nullable()
+        .optional(),
+    })
+    .strict();
+
+  static updateImage: ZodType = z
+    .object({
+      product_id: z.number().min(1).int(),
+      image: z.string().max(500).nullable(),
+      new_image: z.string().max(500),
+    })
+    .strict();
+
+  static updateCategories: ZodType = z
+    .object({
+      product_id: z.number().min(1).int(),
+      categories: z.union([
+        z.array(z.string().max(20).min(3).regex(this.pattern)).min(1).max(10),
+        z.string().max(20).min(3).regex(this.pattern),
+      ]),
+      new_categories: z.union([
+        z.array(z.string().max(20).min(3).regex(this.pattern)).min(1).max(10),
+        z.string().max(20).min(3).regex(this.pattern),
+      ]),
+    })
+    .strict();
+}
