@@ -23,5 +23,6 @@ productRouter.get("/api/products/deleted", verifyTokenMiddleware, verifyAdminMid
 
 // all
 productRouter.get("/api/products", ProductController.get);
+productRouter.get("/api/top-products", ProductController.getTop);
 
 export default productRouter;

@@ -44,34 +44,35 @@ model Otp {
 }
 
 model Product {
-  product_id   Int                 @id @default(autoincrement())
-  product_name String              @unique @db.VarChar(100)
-  image        String              @db.VarChar(300)
-  rate         Int?                @db.Integer
-  sold         Int?                @db.Integer
-  price        Int                 @db.Integer
-  stock        Int                 @db.Integer
-  description  String?             @db.Text
-  created_at   DateTime            @default(now())
-  updated_at   DateTime?           @updatedAt
-  cart         Cart[]
-  categories   CategoryOnProduct[]
+  product_id     Int                 @id @default(autoincrement())
+  product_name   String              @unique @db.VarChar(100)
+  image          String              @db.VarChar(300)
+  rate           Int?                @db.Integer
+  sold           Int?                @db.Integer
+  price          Int                 @db.Integer
+  stock          Int                 @db.Integer
+  description    String?             @db.Text
+  is_top_product Boolean             @default(false) @db.Boolean
+  created_at     DateTime            @default(now())
+  updated_at     DateTime?           @updatedAt
+  cart           Cart[]
+  categories     CategoryOnProduct[]
 
   @@map("products")
 }
 
 model DeletedProduct {
-  product_id         Int                        @id@unique
-  product_name       String                     @unique @db.VarChar(100)
-  image              String                     @db.VarChar(300)
-  rate               Int?                       @db.Integer
-  sold               Int?                       @db.Integer
-  price              Int                        @db.Integer
-  stock              Int                        @db.Integer
-  description        String?                    @db.Text
-  created_at         DateTime                   @default(now())
-  updated_at         DateTime?                  @updatedAt
-  categories         CategoryOnDeletedProduct[]
+  product_id   Int                        @id @unique
+  product_name String                     @unique @db.VarChar(100)
+  image        String                     @db.VarChar(300)
+  rate         Int?                       @db.Integer
+  sold         Int?                       @db.Integer
+  price        Int                        @db.Integer
+  stock        Int                        @db.Integer
+  description  String?                    @db.Text
+  created_at   DateTime                   @default(now())
+  updated_at   DateTime?                  @updatedAt
+  categories   CategoryOnDeletedProduct[]
 
   @@map("deleted_products")
 }

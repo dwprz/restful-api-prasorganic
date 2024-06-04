@@ -42,6 +42,16 @@ export class ProductController {
     }
   }
 
+  static async getTop(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await ProductService.getTop();
+
+      res.status(200).json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getWithCategories(
     req: Request,
     res: Response,

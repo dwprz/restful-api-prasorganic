@@ -3,7 +3,7 @@ import {
   ProductInput,
   ProductQuery,
   ProductUpdate,
-  ProductUpdateImage,
+  ProductImageUpdate,
 } from "../interfaces/product";
 import { ProductValidation } from "../validations/product.validation";
 import validation from "../validations/validation";
@@ -11,6 +11,7 @@ import { ProductUtil } from "../utils/product.util";
 import { PagingHelper } from "../helpers/paging.helper";
 import { FileHelper } from "../helpers/file.helper";
 import { CategoryUtil } from "../utils/category.util";
+import ErrorResponse from "../error/response.error";
 
 export class ProductService {
   static async create(data: ProductInput) {
@@ -63,6 +64,16 @@ export class ProductService {
     );
 
     return result;
+  }
+
+  static async getTop() {
+    const products = await ProductUtil.findManyByFields(
+      { is_top_product: true },
+      8,
+      0
+    );
+
+    return products;
   }
 
   static async getByCategories(data: ProductQuery) {
@@ -170,11 +181,21 @@ export class ProductService {
       data
     );
 
+    if (data.is_top_product) {
+      const total_products = await ProductUtil.countByFields({
+        is_top_product: true,
+      });
+
+      if (total_products >= 8) {
+        throw new ErrorResponse(400, "sorry, there are already 8 top products");
+      }
+    }
+
     const product = await ProductUtil.updateById(product_request, product_id);
     return product;
   }
 
-  static async updateImage(data: ProductUpdateImage) {
+  static async updateImage(data: ProductImageUpdate) {
     const { image, new_image, product_id } = validation(
       ProductValidation.updateImage,
       data

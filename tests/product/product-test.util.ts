@@ -1,5 +1,4 @@
 import pool from "../../src/apps/database.app";
-import ErrorResponse from "../../src/error/response.error";
 import { SqlHelper } from "../../src/helpers/sql.helper";
 import { Product } from "../../src/interfaces/product";
 
@@ -173,6 +172,62 @@ export class ProductTestUtil {
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to create products with categories: ", error.message);
+    } finally {
+      client.release();
+    }
+  }
+
+  static async createManyTopProducts() {
+    const client = await pool.connect();
+
+    let products_request: any[] = [];
+
+    for (let index = 0; index < 8; index++) {
+      const product = {
+        product_name: `${this.product.product_name} ${index + 1}`,
+        image: `${this.product.image} ${index + 1}`,
+        price: `${this.product.price}`,
+        stock: `${this.product.stock}`,
+        description: `${this.product.description} ${index + 1}`,
+        is_top_product: true,
+      };
+
+      products_request.push(product);
+    }
+
+    let products_result: any[] = [];
+
+    try {
+      await client.query("BEGIN TRANSACTION;");
+
+      for (const product of products_request) {
+        // create product
+        let parameterized_queries =
+          SqlHelper.buildParameterizedQueries(product);
+
+        let field_names = SqlHelper.getFieldNames(product);
+        let field_values = SqlHelper.getFieldValues(product);
+
+        let query = `
+        INSERT INTO 
+            products(${field_names}, created_at, updated_at)
+        VALUES
+            (${parameterized_queries}, now(), now())
+        RETURNING *;    
+        `;
+
+        let result = await client.query(query, [...field_values]);
+        const product_result = result.rows[0] as Product;
+
+        products_result.push(product_result);
+      }
+
+      await client.query("COMMIT TRANSACTION;");
+
+      return products_result;
+    } catch (error) {
+      await client.query("ROLLBACK TRANSACTION;");
+      console.log("failed to create top products: ", error.message);
     } finally {
       client.release();
     }

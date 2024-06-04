@@ -13,13 +13,7 @@ export class ProductValidation {
       image: z.string().trim().max(250).min(3),
       price: z.number().max(16000000).min(1000),
       stock: z.number().max(16000000).min(1).int(),
-      description: z
-        .string()
-        .trim()
-        .max(300)
-        .min(5)
-        .regex(this.pattern)
-        .optional(),
+      description: z.string().trim().max(300).min(5).regex(this.pattern).optional(),
       categories: z.union([
         z.array(z.string().max(20).min(3).regex(this.pattern)).min(1).max(10),
         z.string().max(20).min(3).regex(this.pattern),
@@ -43,25 +37,13 @@ export class ProductValidation {
   static update: ZodType = z
     .object({
       product_id: z.number().min(1).int(),
-      product_name: z
-        .string()
-        .trim()
-        .min(3)
-        .max(100)
-        .regex(this.pattern)
-        .optional(),
+      product_name: z.string().trim().min(3).max(100).regex(this.pattern).optional(),
       rate: z.number().max(5).nullable().optional(),
       sold: z.number().nullable().optional(),
       price: z.number().min(1000).max(15000000).optional(),
       stock: z.number().max(15000000).int().optional(),
-      description: z
-        .string()
-        .trim()
-        .max(300)
-        .min(5)
-        .regex(this.pattern)
-        .nullable()
-        .optional(),
+      description: z.string().trim().max(300).min(5).regex(this.pattern).nullable().optional(),
+      is_top_product: z.boolean().optional(),
     })
     .strict();
 

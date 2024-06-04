@@ -38,7 +38,7 @@ describe("PATCH /api/products/:productId", () => {
   });
 
   it("update product should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -46,7 +46,7 @@ describe("PATCH /api/products/:productId", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/${product_id}`)
@@ -61,8 +61,31 @@ describe("PATCH /api/products/:productId", () => {
     expect(result.body.data).toBeDefined();
   });
 
+  it("update top product should be successful", async () => {
+    const login_result = await supertest(app)
+      .post("/api/users/current/login")
+      .send({
+        email: super_admin_email,
+        password: super_admin_password,
+      })
+      .set("Authorization", AUTHORIZATION_SECRET!);
+
+    const cookies = login_result.get("Set-Cookie");
+
+    const result = await supertest(app)
+      .patch(`/api/products/${product_id}`)
+      .send({
+        is_top_product: true,
+      })
+      .set("Cookie", cookies)
+      .set("Authorization", AUTHORIZATION_SECRET!);
+
+    expect(result.status).toBe(200);
+    expect(result.body.data).toBeDefined();
+  });
+
   it("update product should fail if not super admin", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -70,7 +93,7 @@ describe("PATCH /api/products/:productId", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/${product_id}`)
@@ -128,7 +151,7 @@ describe("PATCH /api/products/:productId", () => {
   });
 
   it("update product should fail if invalid request", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -136,7 +159,7 @@ describe("PATCH /api/products/:productId", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/${product_id}`)

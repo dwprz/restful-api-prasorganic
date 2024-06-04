@@ -27,16 +27,6 @@ export interface ProductQuery {
   categories?: string | string[];
 }
 
-export interface ProductsPagination {
-  data: Product[];
-  paging: {
-    page: number;
-    total_page: number;
-    total_products: number;
-  };
-  category?: string;
-}
-
 export interface ProductUpdate {
   product_id: number;
   product_name?: string;
@@ -45,9 +35,10 @@ export interface ProductUpdate {
   price?: number;
   stock?: number;
   description?: string | null;
+  is_top_product?: boolean;
 }
 
-export interface ProductUpdateImage {
+export interface ProductImageUpdate {
   product_id: number;
   image?: string | null;
   new_image: string;

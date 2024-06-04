@@ -3,6 +3,7 @@ import ErrorResponse from "../error/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
 import pool from "../apps/database.app";
 import { ProductHelper } from "../helpers/product.helper";
+import { sql } from "googleapis/build/src/apis/sql";
 
 export class ProductUtil {
   static async createWithCategories(data: ProductInput) {
@@ -147,6 +148,31 @@ export class ProductUtil {
       return products;
     } catch (error) {
       throw new ErrorResponse(400, "failed to find products by name");
+    } finally {
+      client.release();
+    }
+  }
+
+  static async findManyByFields(
+    fields: Record<string, any>,
+    limit: number,
+    offset: number
+  ) {
+    const client = await pool.connect();
+
+    const field_names = SqlHelper.getFieldNames(fields);
+    const field_values = SqlHelper.getFieldValues(fields);
+    const where_clause = SqlHelper.buildWhereClause(fields);
+
+    try {
+      const query = `SELECT * FROM products WHERE ${where_clause} LIMIT ${limit} OFFSET ${offset};`;
+
+      const result = await client.query(query, field_values);
+      const products = result.rows as Product[];
+
+      return products;
+    } catch (error) {
+      throw new ErrorResponse(400, `failed to find product by: ${field_names}`);
     } finally {
       client.release();
     }
@@ -348,6 +374,32 @@ export class ProductUtil {
       const query = `SELECT CAST(COUNT(product_id) AS INTEGER) FROM products;`;
 
       const result = await client.query(query);
+      const total_products = result.rows[0].count;
+
+      return total_products;
+    } catch (error) {
+      throw new ErrorResponse(400, "failed to count products");
+    } finally {
+      client.release();
+    }
+  }
+
+  static async countByFields(fields: Record<string, any>) {
+    const client = await pool.connect();
+
+    try {
+      const where_clause = SqlHelper.buildWhereClause(fields);
+      const field_values = SqlHelper.getFieldValues(fields);
+
+      const query = `
+      SELECT 
+          CAST(COUNT(product_id) AS INTEGER) 
+      FROM 
+          products 
+      WHERE 
+          ${where_clause};`;
+
+      const result = await client.query(query, field_values);
       const total_products = result.rows[0].count;
 
       return total_products;
