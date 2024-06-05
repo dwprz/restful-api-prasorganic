@@ -24,7 +24,7 @@ function verifyTokenMiddleware(
       JWT_ACCESS_TOKEN_SECRET!
     ) as JwtPayload;
 
-    (req as UserRequest).userData = jwt_payload;
+    (req as UserRequest).user_data = jwt_payload;
     next();
   } catch (error: any) {
     return res.status(error.status || 401).json({ error: error.message });

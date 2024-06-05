@@ -1,18 +1,26 @@
-import z from "zod";
+import z, { ZodType } from "zod";
 
-const pattern = /^[^<>/()#=|&!?:;]*$/;
+export class CartValidation {
+  private static pattern = /^[^<>/()#=|&!?:;]*$/;
 
-const create = z.object({
-  product_name: z.string().trim().max(100).min(3).regex(pattern),
-  image: z.string().trim().max(250).min(3),
-  quantity: z.number().min(1).max(1000).int(),
-  price: z.number().max(16000000).min(1000),
-  total_price: z.number().min(1000).max(20000000).int(),
-  stock: z.number().max(16000000).min(1).int(),
-  user_id: z.number().min(1).int(),
-  product_id: z.number().min(1).max(1000000).int(),
-});
+  static user_id: ZodType = z.number().min(1).int();
 
-export const cartValidation = {
-  create,
-};
+  static page: ZodType = z.number().min(1).int();
+
+  static create: ZodType = z.object({
+    user_id: z.number().min(1).int(),
+    product_id: z.number().min(1).max(1000000).int(),
+    quantity: z.number().min(1).max(1000).int(),
+    total_price: z.number().min(1000).max(20000000).int(),
+  });
+
+  static getByProductName: ZodType = z.object({
+    page: z.number().min(1).int(),
+    product_name: z.string().max(100).regex(this.pattern),
+  });
+
+  static delete: ZodType = z.object({
+    user_id: z.number().min(1).int(),
+    cart_item_id: z.number().min(1).int(),
+  });
+}

@@ -45,6 +45,25 @@ WHERE
     c.category_name IN ('KURMA', 'ORGANIK');
 
 
+WITH unique_products AS (
+    SELECT 
+        product_id
+    FROM
+        products
+    LIMIT 1 OFFSET 0
+    )
+SELECT 
+    c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.description,
+    u.email, u.photo_profile, u.role  
+FROM 
+    products AS p
+INNER JOIN
+    carts AS c ON c.product_id = p.product_id
+INNER JOIN 
+    users AS u ON u.user_id = c.user_id
+WHERE 
+    p.product_id IN (SELECT * FROM unique_products);
+
 SELECT * FROM categories;
 SELECT * FROM products;
 SELECT * FROM deleted_products;

@@ -25,7 +25,7 @@ describe("GET /api/users/full-name/:fullName", () => {
   });
 
   it("get users by full name should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -33,7 +33,7 @@ describe("GET /api/users/full-name/:fullName", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .get(`/api/users/full-name/${admin_full_name}?role=ADMIN&page=1`)

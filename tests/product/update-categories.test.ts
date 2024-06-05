@@ -48,7 +48,7 @@ describe("PATCH /api/products/:productId/categories", () => {
   });
 
   test.only("update product categories should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -56,7 +56,7 @@ describe("PATCH /api/products/:productId/categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/categories`)
@@ -72,7 +72,7 @@ describe("PATCH /api/products/:productId/categories", () => {
   });
 
   it("update product image should fail if not super admin", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -80,7 +80,7 @@ describe("PATCH /api/products/:productId/categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/image`)
@@ -114,7 +114,7 @@ describe("PATCH /api/products/:productId/categories", () => {
   });
 
   it("update product image should fail if image file is invalid", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -122,7 +122,7 @@ describe("PATCH /api/products/:productId/categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/image`)

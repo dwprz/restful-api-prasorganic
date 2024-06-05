@@ -578,18 +578,37 @@ export class ProductUtil {
     try {
       await client.query("BEGIN TRANSACTION;");
 
-      let query = `DELETE FROM categories_on_products WHERE product_id = $1 RETURNING category_id;`;
+      // delete categories on product
+      let query = `
+      DELETE FROM 
+          categories_on_products 
+      WHERE 
+          product_id = ${product_id} 
+      RETURNING 
+          category_id;
+      `;
 
-      let result = await client.query(query, [product_id]);
+      let result = await client.query(query);
 
       const categories_ids = result.rows.map(({ category_id }) => {
         return { category_id, product_id };
       });
 
-      query = `DELETE FROM products WHERE product_id = $1 RETURNING *;`;
+      // delete cart
+      query = `DELETE FROM carts WHERE product_id = ${product_id};`;
 
-      result = await client.query(query, [product_id]);
+      await client.query(query);
+
+      // delete product
+      query = `DELETE FROM products WHERE product_id = ${product_id} RETURNING *;`;
+
+      result = await client.query(query);
       const product = result.rows[0];
+
+      // create deleted product
+      if (product.is_top_product) {
+        product.is_top_product = false;
+      }
 
       let field_names = SqlHelper.getFieldNames(product);
       let parameterized_queries = SqlHelper.buildParameterizedQueries(product);
@@ -603,8 +622,9 @@ export class ProductUtil {
       RETURNING *;
       `;
 
-      result = await client.query(query, field_values);
+      await client.query(query, field_values);
 
+      // create categories_on_deleted_products
       const values_placeholders =
         SqlHelper.buildValuesPlaceholders(categories_ids);
 
@@ -618,7 +638,7 @@ export class ProductUtil {
       RETURNING *;
       `;
 
-      result = await client.query(query, field_values);
+      await client.query(query, field_values);
 
       await client.query("COMMIT TRANSACTION;");
     } catch (error) {

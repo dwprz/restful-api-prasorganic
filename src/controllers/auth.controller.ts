@@ -86,7 +86,7 @@ export class AuthController {
 
   static async logout(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
       await AuthService.clearRefreshToken(email);
 
       res.clearCookie("access_token");
@@ -104,7 +104,7 @@ export class AuthController {
     next: NextFunction
   ) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
       await AuthService.authenticate({ ...req.body, email });
 
       res.status(200).json({ message: "authenticated user successfully" });

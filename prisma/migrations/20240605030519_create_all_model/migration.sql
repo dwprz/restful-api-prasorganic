@@ -52,6 +52,7 @@ CREATE TABLE "deleted_products" (
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
     "description" TEXT,
+    "is_top_product" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -84,17 +85,13 @@ CREATE TABLE "categories_on_deleted_products" (
 
 -- CreateTable
 CREATE TABLE "carts" (
-    "cart_id" SERIAL NOT NULL,
-    "product_name" VARCHAR(100) NOT NULL,
-    "image" VARCHAR(300) NOT NULL,
-    "quantity" INTEGER NOT NULL,
-    "price" INTEGER NOT NULL,
-    "total_price" INTEGER NOT NULL,
-    "stock" INTEGER NOT NULL,
+    "cart_item_id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "product_id" INTEGER NOT NULL,
+    "total_price" INTEGER NOT NULL,
+    "quantity" INTEGER NOT NULL,
 
-    CONSTRAINT "carts_pkey" PRIMARY KEY ("cart_id")
+    CONSTRAINT "carts_pkey" PRIMARY KEY ("cart_item_id")
 );
 
 -- CreateTable
@@ -175,6 +172,9 @@ CREATE UNIQUE INDEX "deleted_products_product_name_key" ON "deleted_products"("p
 
 -- CreateIndex
 CREATE UNIQUE INDEX "categories_category_name_key" ON "categories"("category_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "carts_user_id_product_id_key" ON "carts"("user_id", "product_id");
 
 -- AddForeignKey
 ALTER TABLE "categories_on_products" ADD CONSTRAINT "categories_on_products_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("product_id") ON DELETE RESTRICT ON UPDATE CASCADE;

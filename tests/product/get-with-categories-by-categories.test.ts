@@ -39,7 +39,7 @@ describe("GET /api/products-with-categories", () => {
   });
 
   it("get products with categories by categories should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -47,7 +47,7 @@ describe("GET /api/products-with-categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .get("/api/products-with-categories?category=category1&page=1")
@@ -59,7 +59,7 @@ describe("GET /api/products-with-categories", () => {
   });
 
   it("get products with categories by categories should fail if not admin", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: user_email,
@@ -67,7 +67,7 @@ describe("GET /api/products-with-categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .get("/api/products-with-categories?category=category1&page=1")
@@ -79,7 +79,7 @@ describe("GET /api/products-with-categories", () => {
   });
 
   it("get products with categories by categories should fail if without page query", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -87,7 +87,7 @@ describe("GET /api/products-with-categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .get("/api/products-with-categories?category=category1")
@@ -99,7 +99,7 @@ describe("GET /api/products-with-categories", () => {
   });
 
   it("get products with categories by categories should fail if page query more than 100", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -107,7 +107,7 @@ describe("GET /api/products-with-categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .get("/api/products-with-categories?category=category1&page=200")
@@ -119,7 +119,7 @@ describe("GET /api/products-with-categories", () => {
   });
 
   it("get products with categories by categories should fail if without authorization", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -127,7 +127,7 @@ describe("GET /api/products-with-categories", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .get("/api/products-with-categories?category=category1&page=1")

@@ -26,8 +26,6 @@ describe("POST /api/products", () => {
     admin_password = admin!.password;
   });
 
-  afterEach(async () => {});
-
   afterAll(async () => {
     await UserTestUtil.deleteSuperAdmin();
     await UserTestUtil.deleteAdmin();
@@ -35,7 +33,7 @@ describe("POST /api/products", () => {
   });
 
   it("create product should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -43,7 +41,7 @@ describe("POST /api/products", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .post("/api/products")
@@ -66,7 +64,7 @@ describe("POST /api/products", () => {
   });
 
   it("create product with one category should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -74,7 +72,7 @@ describe("POST /api/products", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .post("/api/products")
@@ -95,7 +93,7 @@ describe("POST /api/products", () => {
   });
 
   it("create product should fail if image file is invalid", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -103,7 +101,7 @@ describe("POST /api/products", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .post("/api/products")
@@ -121,7 +119,7 @@ describe("POST /api/products", () => {
   });
 
   it("create product should fail if not super admin", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -129,7 +127,7 @@ describe("POST /api/products", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .post("/api/products")
@@ -149,7 +147,7 @@ describe("POST /api/products", () => {
   });
 
   it("create product should fail if without authorization header", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -157,7 +155,7 @@ describe("POST /api/products", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .post("/api/products")

@@ -108,23 +108,4 @@ export class SqlHelper {
 
     return placeholders;
   }
-
-  // // method untuk menyiapkan data field
-  // static prepareFieldData(fields: Record<string, any> | any[]) {
-  //   const field_names = this.getFieldNames(fields);
-  //   const field_values = this.getFieldValues(fields);
-  //   const where_clause = this.buildWhereClause(fields);
-  //   const set_clause = this.buildSetClause(fields);
-  //   const parameterized_queries = this.buildParameterizedQueries(fields);
-  //   const values_placeholders = this.buildValuesPlaceholders(fields);
-
-  //   return {
-  //     field_names,
-  //     field_values,
-  //     where_clause,
-  //     set_clause,
-  //     parameterized_queries,
-  //     values_placeholders,
-  //   };
-  // }
 }

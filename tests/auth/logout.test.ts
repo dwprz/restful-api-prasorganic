@@ -22,7 +22,7 @@ describe("PATCH /api/users/current/logout", () => {
   });
 
   it("logout user should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: user_email,
@@ -30,7 +30,7 @@ describe("PATCH /api/users/current/logout", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch("/api/users/current/logout")

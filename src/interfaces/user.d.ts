@@ -16,13 +16,6 @@ export interface User {
   updated_at: Date | null;
 }
 
-export interface CreateUser {
-  email: string;
-  full_name: string;
-  password?: string;
-  photo_profile?: string | null;
-}
-
 export interface UserRegister {
   email: string;
   full_name: string;
@@ -40,12 +33,12 @@ export interface UserLoginWithGoogle {
   photo_profile: string | null;
 }
 
-export interface GetUsersByRole {
+export interface UsersByRole {
   page: number;
   role: UserRole;
 }
 
-export interface GetUsersByFullName {
+export interface UsersByFullName {
   page: number;
   role: UserRole;
   full_name: string;
@@ -98,7 +91,7 @@ export interface UserWithTokens {
 }
 
 export interface UserRequest extends Request {
-  userData: JwtPayload;
+  user_data: JwtPayload;
 }
 
 export interface JwtPayload extends jwt.JwtPayload {

@@ -62,17 +62,18 @@ model Product {
 }
 
 model DeletedProduct {
-  product_id   Int                        @id @unique
-  product_name String                     @unique @db.VarChar(100)
-  image        String                     @db.VarChar(300)
-  rate         Int?                       @db.Integer
-  sold         Int?                       @db.Integer
-  price        Int                        @db.Integer
-  stock        Int                        @db.Integer
-  description  String?                    @db.Text
-  created_at   DateTime                   @default(now())
-  updated_at   DateTime?                  @updatedAt
-  categories   CategoryOnDeletedProduct[]
+  product_id     Int                        @id @unique
+  product_name   String                     @unique @db.VarChar(100)
+  image          String                     @db.VarChar(300)
+  rate           Int?                       @db.Integer
+  sold           Int?                       @db.Integer
+  price          Int                        @db.Integer
+  stock          Int                        @db.Integer
+  description    String?                    @db.Text
+  is_top_product Boolean                    @default(false) @db.Boolean
+  created_at     DateTime                   @default(now())
+  updated_at     DateTime?                  @updatedAt
+  categories     CategoryOnDeletedProduct[]
 
   @@map("deleted_products")
 }
@@ -107,18 +108,16 @@ model CategoryOnDeletedProduct {
 }
 
 model Cart {
-  cart_id      Int     @id @default(autoincrement())
-  product_name String  @db.VarChar(100)
-  image        String  @db.VarChar(300)
-  quantity     Int     @db.Integer
-  price        Int     @db.Integer
-  total_price  Int     @db.Integer
-  stock        Int     @db.Integer
+  cart_item_id Int @id @default(autoincrement())
   user_id      Int
   product_id   Int
-  product      Product @relation(fields: [product_id], references: [product_id])
-  user         User    @relation(fields: [user_id], references: [user_id])
+  total_price  Int @db.Integer
+  quantity     Int @db.Integer
 
+  product Product @relation(fields: [product_id], references: [product_id])
+  user    User    @relation(fields: [user_id], references: [user_id])
+
+  @@unique([user_id, product_id])
   @@map("carts")
 }
 

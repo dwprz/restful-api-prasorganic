@@ -7,6 +7,7 @@ export interface Product {
   price: number;
   stock: number;
   description: string | null;
+  is_top_product: boolean;
   created_at: Date;
   updated_at: Date | null;
   categories?: string | string[];

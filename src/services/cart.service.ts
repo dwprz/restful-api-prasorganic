@@ -1,55 +1,80 @@
-// import prismaClient from "../apps/database.app";
-// import ResponseError from "../error/response.error";
-// import { CartInput, CartOutput } from "../interfaces/cart";
-// import { cartValidation } from "../validations/cart.validation";
-// import validation from "../validations/validation";
+import ErrorResponse from "../error/response.error";
+import { PagingHelper } from "../helpers/paging.helper";
+import { CartByProductName, CartDelete, CartInput } from "../interfaces/cart";
+import { CartUtil } from "../utils/cart.util";
+import { CartValidation } from "../validations/cart.validation";
+import validation from "../validations/validation";
 
-// const create = async (data: CartInput) => {
-//   const { user_id, product_id } = validation(cartValidation.create, data);
+export class CartService {
+  static async create(data: CartInput) {
+    validation(CartValidation.create, data);
 
-//   const findCart = await prismaClient.cart.findFirst({
-//     where: {
-//       user_id: user_id,
-//       product_id: product_id,
-//     },
-//   });
+    const total_cart_items = await CartUtil.countByFields({
+      user_id: data.user_id,
+    });
 
-//   if (findCart) return;
+    if (total_cart_items >= 20) {
+      throw new ErrorResponse(400, "sorry, this user already has 20 cart item");
+    }
 
-//   const cart = await prismaClient.cart.create({
-//     data: data,
-//   });
+    const cart_item = await CartUtil.create(data);
+    return cart_item;
+  }
 
-//   return cart;
-// };
+  static async get(page: number) {
+    validation(CartValidation.page, page);
 
-// const get = async (user_id: number): Promise<CartOutput[]> => {
-//   const cart = await prismaClient.cart.findMany({
-//     where: {
-//       user_id: user_id,
-//     },
-//   });
+    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
 
-//   return cart;
-// };
+    const carts = await CartUtil.findMany(limit, offset);
 
-// const remove = async (user_id: number, cart_id: number) => {
-//   try {
-//     await prismaClient.cart.delete({
-//       where: {
-//         cart_id: cart_id,
-//         user_id: user_id,
-//       },
-//     });
+    const total_cart_items = await CartUtil.count();
 
-//     return "success remove cart";
-//   } catch (error) {
-//     throw new ResponseError(400, "failed to remove cart");
-//   }
-// };
+    const result = PagingHelper.formatPagedData(
+      carts,
+      total_cart_items,
+      page,
+      limit
+    );
 
-// export const cartService = {
-//   create,
-//   get,
-//   remove,
-// };
+    return result;
+  }
+
+  static async getByUserId(user_id: number) {
+    validation(CartValidation.user_id, user_id);
+
+    const cart = await CartUtil.findManyByUserId(user_id);
+    return cart;
+  }
+
+  static async getByProductName(data: CartByProductName) {
+    validation(CartValidation.getByProductName, data);
+
+    const { limit, offset } = PagingHelper.createLimitAndOffset(data.page);
+
+    const carts = await CartUtil.findManyByProductName(
+      data.product_name,
+      limit,
+      offset
+    );
+
+    const total_cart_items = await CartUtil.countByProductName(
+      data.product_name
+    );
+
+    const result = PagingHelper.formatPagedData(
+      carts,
+      total_cart_items,
+      data.page,
+      limit
+    );
+
+    return result;
+  }
+
+  static async deleteByUserAndItemId(data: CartDelete) {
+    validation(CartValidation.delete, data);
+
+    await CartUtil.deleteByUserAndItemId(data);
+  }
+}

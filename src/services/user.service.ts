@@ -4,8 +4,8 @@ import { FileHelper } from "../helpers/file.helper";
 import { PagingHelper } from "../helpers/paging.helper";
 import { UserHelper } from "../helpers/user.helper";
 import {
-  GetUsersByFullName,
-  GetUsersByRole,
+  UsersByFullName,
+  UsersByRole,
   UserUpdateEmail,
   UserUpdatePassword,
   UserUpdatePhotoProfile,
@@ -28,7 +28,7 @@ export class UserService {
     return user;
   }
 
-  static async getByRole(data: GetUsersByRole) {
+  static async getByRole(data: UsersByRole) {
     const { page, role } = validation(UserValidation.getByRole, data);
 
     const { limit, offset } = PagingHelper.createLimitAndOffset(page);
@@ -52,7 +52,7 @@ export class UserService {
     return result;
   }
 
-  static async getByFullName(data: GetUsersByFullName) {
+  static async getByFullName(data: UsersByFullName) {
     const { full_name, role, page } = validation(
       UserValidation.getByFullName,
       data

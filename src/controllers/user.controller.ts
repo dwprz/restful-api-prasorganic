@@ -6,7 +6,7 @@ import { FileHelper } from "../helpers/file.helper";
 export class UserController {
   static async getCurrent(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
       const result = await UserService.getByEmail(email);
       res.status(200).json({ data: result });
     } catch (error) {
@@ -46,7 +46,7 @@ export class UserController {
 
   static async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
 
       const result = await UserService.updateProfile({
         ...req.body,
@@ -65,7 +65,7 @@ export class UserController {
     next: NextFunction
   ) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
 
       const result = await UserService.updatePhotoProfile({
         ...req.body,
@@ -81,7 +81,7 @@ export class UserController {
 
   static async updatePassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
       await UserService.updatePassword({ ...req.body, email });
 
       res.status(200).json({ message: "updated password successfully" });
@@ -92,7 +92,7 @@ export class UserController {
 
   static async updateEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = (req as UserRequest).userData;
+      const { email } = (req as UserRequest).user_data;
 
       const { user, access_token } = await UserService.updateEmail({
         ...req.body,

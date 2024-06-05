@@ -7,6 +7,7 @@ import authMiddleware from "../middlewares/auth.middleware";
 import userRouter from "../routers/user.router";
 import productRouter from "../routers/product.router";
 import addressRouter from "../routers/addess.router";
+import cartRouter from "../routers/cart.router";
 
 const corsOpt = {
   credentials: true,
@@ -23,6 +24,7 @@ app.use(authMiddleware);
 app.use(authRouter);
 app.use(userRouter);
 app.use(productRouter);
+app.use(cartRouter);
 app.use(addressRouter);
 app.use(errorMiddleware);
 

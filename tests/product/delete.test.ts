@@ -43,7 +43,7 @@ describe("DELETE /api/products/:productId", () => {
   });
 
   it("delete product should be successful", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -51,7 +51,7 @@ describe("DELETE /api/products/:productId", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .delete(`/api/products/${product_id}`)
@@ -63,7 +63,7 @@ describe("DELETE /api/products/:productId", () => {
   });
 
   it("delete product should fail if not super admin", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: admin_email,
@@ -71,7 +71,7 @@ describe("DELETE /api/products/:productId", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .delete(`/api/products/${product_id}`)
@@ -116,7 +116,7 @@ describe("DELETE /api/products/:productId", () => {
   });
 
   it("delete product should fail if invalid product id", async () => {
-    const loginRes = await supertest(app)
+    const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
         email: super_admin_email,
@@ -124,7 +124,7 @@ describe("DELETE /api/products/:productId", () => {
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    const cookies = loginRes.get("Set-Cookie");
+    const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
       .patch(`/api/products/INVALID PRODUCT ID`)

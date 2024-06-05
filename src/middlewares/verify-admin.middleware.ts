@@ -6,7 +6,7 @@ function verifyAdminMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  const { role } = (req as UserRequest).userData;
+  const { role } = (req as UserRequest).user_data;
 
   role === "ADMIN" || role === "SUPER_ADMIN"
     ? next()
