@@ -1,11 +1,65 @@
-version: "3.8"
-
 services:
-  belajar-user-role:
-    image: postgres:16.0
-    container_name: belajar-user-role
+  postgres-prasorganic:
+    image: "postgres:16.0"
+    container_name: postgres-prasorganic
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: rahasia
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - type: volume
+        source: data-postgres-prasorganic
+        target: /var/lib/postgresql/data
+    networks:
+      - prasorganic-networks
+    restart: on-failure
+
+  redis-prasorganic:
+    image: "redis:7.2.2"
+    container_name: redis-prasorganic
+    ports:
+      - "6379:6379"
+    volumes:
+      - type: bind
+        source: ./docs/redis
+        target: /usr/local/etc/redis
+      - type: volume
+        source: data-redis-prasorganic
+        target: /data
+    networks:
+      - prasorganic-networks
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: on-failure
+
+  prasorganic-restfulapi:
+    container_name: prasorganic-restfulapi
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: "prasorganic-restfulapi:1.0.0"
+    env_file:
+      - ./.env
+    ports:
+      - "3300:3300"
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    networks:
+      - prasorganic-networks
+    depends_on:
+      - postgres-prasorganic
+      - redis-prasorganic
+    restart: on-failure
+
+volumes:
+  data-postgres-prasorganic:
+    name: data-postgres-prasorganic
+  data-redis-prasorganic:
+    name: data-redis-prasorganic
+
+networks:
+  prasorganic-networks:
+    name: prasorganic-networks
+    driver: bridge

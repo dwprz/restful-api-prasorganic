@@ -1,0 +1,7 @@
+node_modules
+.env
+docs
+dummy.js
+script.sh
+.git
+.gitignore
