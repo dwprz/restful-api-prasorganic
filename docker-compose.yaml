@@ -7,10 +7,14 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command: postgres -c config_file=/etc/postgresql.conf
     volumes:
       - type: volume
         source: data-postgres-prasorganic
         target: /var/lib/postgresql/data
+      - type: bind
+        source: ./docs/postgresql/postgresql.conf
+        target: /etc/postgresql.conf
     networks:
       - prasorganic-networks
     restart: on-failure
