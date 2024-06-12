@@ -3,7 +3,7 @@ import { ProductTestUtil } from "./product-test.util";
 import app from "../../src/apps/application.app";
 import "dotenv/config";
 import { UserTestUtil } from "../user/user-test.util";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 // npx jest tests/product/create.test.ts
 

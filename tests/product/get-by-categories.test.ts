@@ -2,7 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import "dotenv/config";
 import { ProductTestUtil } from "./product-test.util";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 // npx jest tests/product/get-by-categories.test.ts
 

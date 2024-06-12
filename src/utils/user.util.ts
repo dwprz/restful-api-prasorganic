@@ -1,4 +1,4 @@
-import pool from "../apps/database.app";
+import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
 import { User, UserLoginWithGoogle, UserRegister } from "../interfaces/user";
 import { UserHelper } from "../helpers/user.helper";

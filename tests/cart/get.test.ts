@@ -3,7 +3,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
 import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 // npx jest tests/cart/get.test.ts
 

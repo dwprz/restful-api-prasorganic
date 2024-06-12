@@ -1,4 +1,4 @@
-import pool from "../apps/database.app";
+import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
 import { CartHelper } from "../helpers/cart.helper";
 import { SqlHelper } from "../helpers/sql.helper";

@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 import { UserTestUtil } from "../user/user-test.util";
 
 // npx jest tests/auth/login-google.test.ts

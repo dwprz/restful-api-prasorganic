@@ -1,9 +1,8 @@
 import { Product, ProductInput } from "../interfaces/product";
 import ErrorResponse from "../error/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
-import pool from "../apps/database.app";
+import pool from "../apps/postgresql.app";
 import { ProductHelper } from "../helpers/product.helper";
-import { sql } from "googleapis/build/src/apis/sql";
 
 export class ProductUtil {
   static async createWithCategories(data: ProductInput) {

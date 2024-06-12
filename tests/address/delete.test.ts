@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
 
 // npx jest tests/address/delete.test.ts

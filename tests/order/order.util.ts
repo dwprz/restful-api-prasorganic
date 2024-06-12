@@ -1,10 +1,10 @@
-import prismaClient from "../../src/apps/database.app";
+// import prismaClient from "../../src/apps/database.app";
 
-const remove = async () => {
-  await prismaClient.productOrderHistori.deleteMany({});
-  await prismaClient.order.deleteMany({});
-};
+// const remove = async () => {
+//   await prismaClient.productOrderHistori.deleteMany({});
+//   await prismaClient.order.deleteMany({});
+// };
 
-export const orderUtil = {
-  remove,
-};
+// export const orderUtil = {
+//   remove,
+// };

@@ -1,4 +1,4 @@
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 import bcrypt from "bcrypt";
 import { User } from "../../src/interfaces/user";
 
@@ -45,7 +45,7 @@ export class UserTestUtil {
       }
 
       return { ...user, password: this.user.password };
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from user test utils: ", error.message);
     } finally {
       client.release();
@@ -68,7 +68,7 @@ export class UserTestUtil {
       `;
 
       await client.query(query);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from user test utils: ", error.message);
     } finally {
       client.release();
@@ -94,7 +94,7 @@ export class UserTestUtil {
       const admin = result.rows[0] as User;
 
       return { ...admin, password: this.admin.password };
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from user test utils: ", error.message);
     } finally {
       client.release();
@@ -119,7 +119,7 @@ export class UserTestUtil {
       `;
 
       await client.query(query);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from user test utils: ", error.message);
     } finally {
       client.release();
@@ -145,7 +145,7 @@ export class UserTestUtil {
       const super_admin = result.rows[0] as User;
 
       return { ...super_admin, password: this.super_admin.password };
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from user test utils: ", error.message);
     } finally {
       client.release();
@@ -170,7 +170,7 @@ export class UserTestUtil {
       `;
 
       await client.query(query);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from user test utils: ", error.message);
     } finally {
       client.release();

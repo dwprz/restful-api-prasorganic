@@ -1,4 +1,4 @@
-import pool from "../apps/database.app";
+import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
 import { AddressInput, AddressUpdate } from "../interfaces/address";

@@ -1,4 +1,4 @@
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 export class AuthTestUtil {
   private static pool = pool;
@@ -17,7 +17,7 @@ export class AuthTestUtil {
       `;
 
       await client.query(query, [email, otp]);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from test utils: ", error.message);
     } finally {
       client.release();
@@ -31,7 +31,7 @@ export class AuthTestUtil {
       DELETE FROM otp WHERE email = $1 RETURNING *;`;
 
       await client.query(query, [email]);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error from test utils: ", error.message);
     } finally {
       client.release();

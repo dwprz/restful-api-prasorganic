@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 // npx jest tests/auth/refresh-token.test.ts
 

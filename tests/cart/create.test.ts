@@ -3,7 +3,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
 import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 // npx jest tests/cart/create.test.ts
 
@@ -52,7 +52,7 @@ describe("POST /api/carts/items", () => {
       .send({
         product_id: product_id,
         quantity: 10,
-        total_price: 250000,
+        total_gross_price: 250000,
       })
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
@@ -77,7 +77,7 @@ describe("POST /api/carts/items", () => {
       .send({
         product_id: product_id,
         quantity: 10,
-        total_price: 250000,
+        total_gross_price: 250000,
       })
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
@@ -87,7 +87,7 @@ describe("POST /api/carts/items", () => {
       .send({
         product_id: product_id,
         quantity: 10,
-        total_price: 250000,
+        total_gross_price: 250000,
       })
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);

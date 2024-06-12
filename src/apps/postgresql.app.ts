@@ -23,5 +23,8 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
-export default pool;
+pool.on("error", (error) => {
+  console.log("postgres error: ", error.message);
+});
 
+export default pool;

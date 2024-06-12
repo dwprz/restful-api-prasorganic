@@ -1,16 +1,17 @@
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 import { SqlHelper } from "../../src/helpers/sql.helper";
 
 export class AddressTestUtil {
   private static address = {
     address_owner: "NAME TEST",
     street: "STREET TEST",
+    subdistrict_id: "1",
     subdistrict: "SUBDISTRICT TEST",
-    district: "DISTRICT TEST",
+    city_id: "1",
+    city: "CITY TEST",
+    province_id: "1",
     province: "PROVINCE TEST",
-    country: "COUNTRY TEST",
-    postal_code: "12345",
-    whatsapp: "WHATSAPP TEST",
+    whatsapp: "08123456789",
     is_main_address: true,
   };
 
@@ -41,7 +42,7 @@ export class AddressTestUtil {
       const address = result.rows[0];
 
       return address;
-    } catch (error) {
+    } catch (error: any) {
       console.log("error address util test create: ", error.message);
     } finally {
       client.release();
@@ -56,11 +57,12 @@ export class AddressTestUtil {
         user_id: user_id,
         address_owner: this.address.address_owner,
         street: this.address.street + ` ${index + 1}`,
+        subdistrict_id: (index + 1).toString(),
         subdistrict: this.address.subdistrict + ` ${index + 1}`,
-        district: this.address.district + ` ${index + 1}`,
+        city_id: (index + 1).toString(),
+        city: this.address.city + ` ${index + 1}`,
+        province_id: (index + 1).toString(),
         province: this.address.province + ` ${index + 1}`,
-        country: this.address.country + ` ${index + 1}`,
-        postal_code: "12345",
         whatsapp: this.address.whatsapp + ` ${index + 1}`,
         is_main_address: false,
       };
@@ -96,7 +98,7 @@ export class AddressTestUtil {
       }
 
       return addresses_result;
-    } catch (error) {
+    } catch (error: any) {
       console.log("error address util test create many: ", error.message);
     } finally {
       client.release();
@@ -109,7 +111,7 @@ export class AddressTestUtil {
       const query = `DELETE FROM addresses WHERE user_id = ${user_id};`;
 
       await client.query(query);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error address util test delete: ", error.message);
     } finally {
       client.release();

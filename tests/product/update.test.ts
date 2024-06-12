@@ -2,7 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { ProductTestUtil } from "./product-test.util";
 import { UserTestUtil } from "../user/user-test.util";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 
 // npx jest tests/product/update.test.ts
 

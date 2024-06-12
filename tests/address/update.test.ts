@@ -1,8 +1,9 @@
 import supertest from "supertest";
 import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/address/update.test.ts
 
@@ -29,6 +30,7 @@ describe("PUT /api/addresses/:addressId", () => {
     await AddressTestUtil.delete(user_id);
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("update address should be successful", async () => {
@@ -48,12 +50,13 @@ describe("PUT /api/addresses/:addressId", () => {
         address_id: address_id,
         address_owner: "NEW NAME TEST",
         street: "STREET TEST",
+        subdistrict_id: "1",
         subdistrict: "SUBDISTRICT TEST",
-        district: "DISTRICT TEST",
+        city_id: "1",
+        city: "CITY TEST",
+        province_id: "1",
         province: "NEW PROVINCE TEST",
-        country: "COUNTRY TEST",
-        postal_code: "12345",
-        whatsapp: "WHATSAPP TEST",
+        whatsapp: "08123456789",
         is_main_address: true,
       })
       .set("Cookie", cookies!)
@@ -80,12 +83,13 @@ describe("PUT /api/addresses/:addressId", () => {
         address_id: address_id,
         address_owner: "NEW NAME TEST",
         street: "STREET TEST",
+        subdistrict_id: "1",
         subdistrict: "SUBDISTRICT TEST",
-        district: "DISTRICT TEST",
+        city_id: "1",
+        city: "CITY TEST",
+        province_id: "1",
         province: "NEW PROVINCE TEST",
-        country: "COUNTRY TEST",
-        postal_code: "12345",
-        whatsapp: "WHATSAPP TEST",
+        whatsapp: "08123456789",
         is_main_address: true,
       })
       .set("Cookie", cookies!);

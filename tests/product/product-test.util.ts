@@ -1,4 +1,4 @@
-import pool from "../../src/apps/database.app";
+import pool from "../../src/apps/postgresql.app";
 import { SqlHelper } from "../../src/helpers/sql.helper";
 import { Product } from "../../src/interfaces/product";
 
@@ -76,7 +76,7 @@ export class ProductTestUtil {
       await client.query("COMMIT TRANSACTION;");
 
       return { ...product_result, categories: this.categories };
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to create product with categories: ", error.message);
     } finally {
@@ -169,7 +169,7 @@ export class ProductTestUtil {
       await client.query("COMMIT TRANSACTION;");
 
       return products_result;
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to create products with categories: ", error.message);
     } finally {
@@ -225,7 +225,7 @@ export class ProductTestUtil {
       await client.query("COMMIT TRANSACTION;");
 
       return products_result;
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to create top products: ", error.message);
     } finally {
@@ -273,7 +273,7 @@ export class ProductTestUtil {
       await client.query("COMMIT TRANSACTION");
 
       return product;
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION");
       console.log("failed to create deleted product: ", error.message);
     } finally {
@@ -348,7 +348,7 @@ export class ProductTestUtil {
       await client.query("COMMIT TRANSACTION;");
 
       return products_result;
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to create deleted products: ", error.message);
     } finally {
@@ -405,7 +405,7 @@ export class ProductTestUtil {
       await client.query(query);
 
       await client.query("COMMIT TRANSACTION;");
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to delete product with categories: ", error.message);
     } finally {
@@ -476,7 +476,7 @@ export class ProductTestUtil {
       await client.query(query);
 
       await client.query("COMMIT TRANSACTION;");
-    } catch (error) {
+    } catch (error: any) {
       await client.query("ROLLBACK TRANSACTION;");
       console.log("failed to create products with categories: ", error.message);
     } finally {
