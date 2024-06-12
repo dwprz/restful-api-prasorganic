@@ -55,7 +55,7 @@ services:
     depends_on:
       - postgres-prasorganic
       - redis-prasorganic
-    restart: on-failure
+    restart: no
 
 volumes:
   data-postgres-prasorganic:
