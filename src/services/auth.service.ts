@@ -27,7 +27,7 @@ export class AuthService {
     }
 
     const template = TemplateHelper.render(
-      process.cwd() + "/src/template/otp.html",
+      process.cwd() + "/template/otp.html",
       { otp }
     );
 
