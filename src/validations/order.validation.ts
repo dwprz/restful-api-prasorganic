@@ -29,7 +29,7 @@ const create = z.object({
       image: z.string(),
       quantity: z.number(),
       price: z.number(),
-      total_price: z.number(),
+      total_gross_price: z.number(),
     })
   ),
 });

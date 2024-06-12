@@ -24,14 +24,14 @@ export class CartHelper {
             updated_at: item.updated_at,
           },
           total_quantity: 0,
-          sum_total_price: 0,
+          sum__total_gross_price: 0,
           cart: [],
         };
       }
 
       dummy_carts[item.product_id].total_quantity += item.quantity;
 
-      dummy_carts[item.product_id].sum_total_price += item.total_price;
+      dummy_carts[item.product_id].sum_total_gross_price += item.total_gross_price;
 
       dummy_carts[item.product_id].cart.push({
         user: {
@@ -41,7 +41,7 @@ export class CartHelper {
           role: item.role,
         },
         quantity: item.quantity,
-        total_price: item.total_price,
+        total_gross_price: item.total_gross_price,
       });
     });
 

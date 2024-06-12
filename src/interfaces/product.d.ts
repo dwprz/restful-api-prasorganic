@@ -44,14 +44,3 @@ export interface ProductImageUpdate {
   image?: string | null;
   new_image: string;
 }
-
-export interface ProductOrder {
-  product_order_id?: number;
-  order_id?: number;
-  product_id: number;
-  product_name: string;
-  image: string;
-  quantity: number;
-  price: number;
-  total_price: number;
-}

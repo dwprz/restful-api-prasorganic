@@ -108,11 +108,11 @@ model CategoryOnDeletedProduct {
 }
 
 model Cart {
-  cart_item_id Int @id @default(autoincrement())
-  user_id      Int
-  product_id   Int
-  total_price  Int @db.Integer
-  quantity     Int @db.Integer
+  cart_item_id      Int @id @default(autoincrement())
+  user_id           Int
+  product_id        Int
+  total_gross_price Int @db.Integer
+  quantity          Int @db.Integer
 
   product Product @relation(fields: [product_id], references: [product_id])
   user    User    @relation(fields: [user_id], references: [user_id])
@@ -123,15 +123,16 @@ model Cart {
 
 model Address {
   address_id      Int       @id @default(autoincrement())
+  user_id         Int
   address_owner   String    @db.VarChar(100)
   street          String    @db.VarChar(200)
+  subdistrict_id  String    @db.VarChar(5)
   subdistrict     String    @db.VarChar(100)
-  district        String    @db.VarChar(100)
+  city_id         String    @db.VarChar(5)
+  city            String    @db.VarChar(100)
+  province_id     String    @db.VarChar(5)
   province        String    @db.VarChar(100)
-  country         String?   @db.VarChar(50)
-  postal_code     String    @db.VarChar(10)
   whatsapp        String    @db.VarChar(20)
-  user_id         Int
   is_main_address Boolean   @default(false) @db.Boolean
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
@@ -141,24 +142,23 @@ model Address {
 }
 
 model Order {
-  order_id       Int    @id @default(autoincrement())
-  total_amount   Int    @db.Integer
-  logistic       String @db.VarChar(50)
-  payment_method String @db.VarChar(50)
-  status         String @db.VarChar(20)
+  order_id        Int     @id @default(autoincrement())
+  total_net_price Int     @db.Integer
+  courier         String  @db.VarChar(50)
+  payment_method  String  @db.VarChar(50)
+  status          String  @db.VarChar(20)
+  waybill_number  String? @db.VarChar(100)
 
-  user_id   Int    @db.Integer
-  email     String @db.VarChar(100)
-  full_name String @db.VarChar(100)
+  user_id Int    @db.Integer
+  email   String @db.VarChar(100)
+  buyer   String @db.VarChar(100)
 
-  address_owner String  @db.VarChar(100)
-  street        String  @db.VarChar(200)
-  subdistrict   String  @db.VarChar(100)
-  district      String  @db.VarChar(100)
-  province      String  @db.VarChar(100)
-  country       String? @db.VarChar(50)
-  postal_code   String  @db.VarChar(10)
-  whatsapp      String  @db.VarChar(20)
+  address_owner String @db.VarChar(100)
+  street        String @db.VarChar(200)
+  subdistrict   String @db.VarChar(100)
+  city          String @db.VarChar(100)
+  province      String @db.VarChar(100)
+  whatsapp      String @db.VarChar(20)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -166,6 +166,16 @@ model Order {
   products ProductOrder[]
 
   @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  ON_PROGRESS
+  COMPLETED
+  CANCELED
+  FAILED
+  REFUND_PROCESSED
+  REFUND_COMPLETED
 }
 
 model ProductOrder {
@@ -176,7 +186,7 @@ model ProductOrder {
   image                    String   @db.VarChar(300)
   price                    Int      @db.Integer
   quantity                 Int      @db.Integer
-  total_price              Int      @db.Integer
+  total_gross_price        Int      @db.Integer
   created_at               DateTime @default(now())
   order                    Order    @relation(fields: [order_id], references: [order_id])
 

@@ -11,7 +11,7 @@ export class CartValidation {
     user_id: z.number().min(1).int(),
     product_id: z.number().min(1).max(1000000).int(),
     quantity: z.number().min(1).max(1000).int(),
-    total_price: z.number().min(1000).max(20000000).int(),
+    total_gross_price: z.number().min(1000).max(20000000).int(),
   });
 
   static getByProductName: ZodType = z.object({

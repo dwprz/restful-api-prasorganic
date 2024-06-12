@@ -4,7 +4,7 @@ export interface CartInput {
   user_id: number;
   product_id: number;
   quantity: number;
-  total_price: number;
+  total_gross_price: number;
 }
 
 export interface CartDelete {
@@ -31,7 +31,7 @@ export interface CartDetails {
     updated_at: Date | null;
   };
   total_quantity: number;
-  sum_total_price: number;
+  sum_total_gross_price: number;
   cart: CartWithUser[];
 }
 
@@ -43,7 +43,7 @@ export interface CartWithUser {
     role: UserRole;
   };
   quantity: number;
-  total_price: number;
+  total_gross_price: number;
 }
 
 export interface CartOutput {
@@ -55,7 +55,7 @@ export interface CartOutput {
   rate: number | null;
   sold: number | null;
   price: number;
-  total_price: number;
+  total_gross_price: number;
   quantity: number;
   stock: number;
   description: string | null;

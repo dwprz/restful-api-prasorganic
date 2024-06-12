@@ -1,13 +1,14 @@
 export interface AddressInput {
+  user_id: number;
   address_owner: string;
   street: string;
+  subdistrict_id: string;
   subdistrict: string;
-  district: string;
+  city_id: string;
+  city: string;
+  province_id: string;
   province: string;
-  country?: string;
-  postal_code: string;
   whatsapp: string;
-  user_id: number;
   is_main_address: boolean;
 }
 
@@ -16,11 +17,12 @@ export interface AddressUpdate {
   user_id: number;
   address_owner?: string;
   street?: string;
+  subdistrict_id?: string;
   subdistrict?: string;
-  district?: string;
+  city_id?: string;
+  city?: string;
+  province_id?: string;
   province?: string;
-  country?: string;
-  postal_code?: string;
   whatsapp?: string;
   is_main_address?: boolean;
 }

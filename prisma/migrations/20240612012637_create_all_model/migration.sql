@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN');
 
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING_PAYMENT', 'ON_PROGRESS', 'COMPLETED', 'CANCELED', 'FAILED', 'REFUND_PROCESSED', 'REFUND_COMPLETED');
+
 -- CreateTable
 CREATE TABLE "users" (
     "user_id" SERIAL NOT NULL,
@@ -88,7 +91,7 @@ CREATE TABLE "carts" (
     "cart_item_id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "product_id" INTEGER NOT NULL,
-    "total_price" INTEGER NOT NULL,
+    "total_gross_price" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
 
     CONSTRAINT "carts_pkey" PRIMARY KEY ("cart_item_id")
@@ -97,15 +100,16 @@ CREATE TABLE "carts" (
 -- CreateTable
 CREATE TABLE "addresses" (
     "address_id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
     "address_owner" VARCHAR(100) NOT NULL,
     "street" VARCHAR(200) NOT NULL,
+    "subdistrict_id" VARCHAR(5) NOT NULL,
     "subdistrict" VARCHAR(100) NOT NULL,
-    "district" VARCHAR(100) NOT NULL,
+    "city_id" VARCHAR(5) NOT NULL,
+    "city" VARCHAR(100) NOT NULL,
+    "province_id" VARCHAR(5) NOT NULL,
     "province" VARCHAR(100) NOT NULL,
-    "country" VARCHAR(50),
-    "postal_code" VARCHAR(10) NOT NULL,
     "whatsapp" VARCHAR(20) NOT NULL,
-    "user_id" INTEGER NOT NULL,
     "is_main_address" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
@@ -116,20 +120,19 @@ CREATE TABLE "addresses" (
 -- CreateTable
 CREATE TABLE "orders" (
     "order_id" SERIAL NOT NULL,
-    "total_amount" INTEGER NOT NULL,
-    "logistic" VARCHAR(50) NOT NULL,
+    "total_net_price" INTEGER NOT NULL,
+    "courier" VARCHAR(50) NOT NULL,
     "payment_method" VARCHAR(50) NOT NULL,
     "status" VARCHAR(20) NOT NULL,
+    "waybill_number" VARCHAR(100),
     "user_id" INTEGER NOT NULL,
     "email" VARCHAR(100) NOT NULL,
-    "full_name" VARCHAR(100) NOT NULL,
+    "buyer" VARCHAR(100) NOT NULL,
     "address_owner" VARCHAR(100) NOT NULL,
     "street" VARCHAR(200) NOT NULL,
     "subdistrict" VARCHAR(100) NOT NULL,
-    "district" VARCHAR(100) NOT NULL,
+    "city" VARCHAR(100) NOT NULL,
     "province" VARCHAR(100) NOT NULL,
-    "country" VARCHAR(50),
-    "postal_code" VARCHAR(10) NOT NULL,
     "whatsapp" VARCHAR(20) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
@@ -146,7 +149,7 @@ CREATE TABLE "products_orders" (
     "image" VARCHAR(300) NOT NULL,
     "price" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "total_price" INTEGER NOT NULL,
+    "total_gross_price" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "products_orders_pkey" PRIMARY KEY ("product_order_history_id")

@@ -1,34 +1,38 @@
 import { Product } from "@prisma/client";
 import { number } from "zod";
-import { ProductOrderHistori } from "./product";
 
 export interface Order {
   order_id?: number;
-  total_amount: number;
-  logistic: string;
+  total_net_price: number;
+  courier: string;
   payment_method: string;
   status: string;
+  waybill_number: string;
 
   user_id: number;
   email: string;
-  full_name: string;
+  buyer: string;
 
   address_owner: string;
   street: string;
   subdistrict: string;
-  district: string;
+  city: string;
   province: string;
-  country?: string;
-  postal_code: string;
   whatsapp: string;
 }
 
 export interface OrderInput {
   order: Order;
-  products: ProductOrderHistori[];
+  products: ProductOrder[];
 }
 
-export interface OrderUpdateStatus {
-  order_id: number;
-  status: string;
+export interface ProductOrder {
+  product_order_id?: number;
+  order_id?: number;
+  product_id: number;
+  product_name: string;
+  image: string;
+  quantity: number;
+  price: number;
+  total_gross_price: number;
 }
