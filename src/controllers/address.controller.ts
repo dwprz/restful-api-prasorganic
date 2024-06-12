@@ -8,7 +8,7 @@ export class AddressController {
       const { user_id } = (req as UserRequest).user_data;
 
       const result = await AddressService.create({ ...req.body, user_id });
-      res.status(200).json({ data: result });
+      res.status(201).json({ data: result });
     } catch (error) {
       next(error);
     }
@@ -24,6 +24,7 @@ export class AddressController {
       next(error);
     }
   }
+
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
