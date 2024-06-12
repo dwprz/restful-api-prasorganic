@@ -1,6 +1,7 @@
 {
-  "include": ["src/**/*", "tests/order/order.util.ts"],
+  "include": ["src/**/*"],
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "ES6" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "module": "NodeNext" /* Specify what module code is generated. */,
     "moduleResolution": "NodeNext",

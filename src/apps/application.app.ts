@@ -8,6 +8,7 @@ import userRouter from "../routers/user.router";
 import productRouter from "../routers/product.router";
 import addressRouter from "../routers/addess.router";
 import cartRouter from "../routers/cart.router";
+import rajaOngkirRouter from "../routers/raja-ongkir.router";
 
 const corsOpt = {
   credentials: true,
@@ -20,12 +21,14 @@ app.use("/images/products", express.static(process.cwd() + "/public/images/produ
 app.use("/images/users", express.static(process.cwd() + "/public/images/users"));
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 app.use(authMiddleware);
 app.use(authRouter);
 app.use(userRouter);
 app.use(productRouter);
 app.use(cartRouter);
 app.use(addressRouter);
+app.use(rajaOngkirRouter);
 app.use(errorMiddleware);
 
 export default app;
