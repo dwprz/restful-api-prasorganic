@@ -9,7 +9,7 @@ export class ProductController {
       req.body = RequestHelper.parse(req.body);
 
       const result = await ProductService.create(req.body);
-      res.status(200).json({ data: result });
+      res.status(201).json({ data: result });
     } catch (error) {
       FileHelper.deleteByUrl(req.body.image);
       next(error);
@@ -148,7 +148,7 @@ export class ProductController {
 
       await ProductService.delete(product_id);
 
-      res.status(200).json({ message: "deleted product successfully" });
+      res.status(200).json({ data: "deleted product successfully" });
     } catch (error) {
       next(error);
     }

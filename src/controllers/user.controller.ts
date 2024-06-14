@@ -84,7 +84,7 @@ export class UserController {
       const { email } = (req as UserRequest).user_data;
       await UserService.updatePassword({ ...req.body, email });
 
-      res.status(200).json({ message: "updated password successfully" });
+      res.status(200).json({ data: "updated password successfully" });
     } catch (error) {
       next(error);
     }

@@ -59,7 +59,7 @@ describe("POST /api/carts/items", () => {
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    expect(result.status).toBe(200);
+    expect(result.status).toBe(201);
     expect(result.body.data).toBeDefined();
   });
 
@@ -94,7 +94,7 @@ describe("POST /api/carts/items", () => {
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    expect(result.status).toBe(200);
+    expect(result.status).toBe(201);
     expect(result.body.data).toBe(null);
   });
 

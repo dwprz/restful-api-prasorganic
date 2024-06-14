@@ -66,7 +66,7 @@ describe("POST /api/products", () => {
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    expect(result.status).toBe(200);
+    expect(result.status).toBe(201);
     expect(result.body.data).toBeDefined();
 
     product_id = result.body.data?.product_id || undefined;
@@ -94,7 +94,7 @@ describe("POST /api/products", () => {
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    expect(result.status).toBe(200);
+    expect(result.status).toBe(201);
     expect(result.body.data).toBeDefined();
 
     product_id = result.body.data?.product_id || undefined;

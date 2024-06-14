@@ -6,7 +6,7 @@ export class AuthController {
   static async sendOtp(req: Request, res: Response, next: NextFunction) {
     try {
       await AuthService.sendOtp(req.body.email);
-      res.status(200).json({ message: "sent otp successfully" });
+      res.status(200).json({ data: "sent otp successfully" });
     } catch (error) {
       next(error);
     }
@@ -15,7 +15,7 @@ export class AuthController {
   static async verifyOtp(req: Request, res: Response, next: NextFunction) {
     try {
       await AuthService.verifyOtp(req.body);
-      res.status(200).json({ message: "verified otp successfully" });
+      res.status(200).json({ data: "verified otp successfully" });
     } catch (error) {
       next(error);
     }
@@ -92,22 +92,18 @@ export class AuthController {
       res.clearCookie("access_token");
       res.clearCookie("refresh_token");
 
-      res.status(200).json({ message: "logged out successfully" });
+      res.status(200).json({ data: "logged out successfully" });
     } catch (error) {
       next(error);
     }
   }
 
-  static async authenticate(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async authenticate(req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = (req as UserRequest).user_data;
       await AuthService.authenticate({ ...req.body, email });
 
-      res.status(200).json({ message: "authenticated user successfully" });
+      res.status(200).json({ data: "authenticated user successfully" });
     } catch (error) {
       next(error);
     }

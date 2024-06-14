@@ -8,7 +8,7 @@ export class CartController {
       const { user_id } = (req as UserRequest).user_data;
 
       const cart = await CartService.create({ ...req.body, user_id });
-      res.status(200).json({ data: cart });
+      res.status(201).json({ data: cart });
     } catch (error) {
       next(error);
     }
@@ -66,7 +66,7 @@ export class CartController {
 
       await CartService.deleteByUserAndItemId({ user_id, cart_item_id });
 
-      res.status(200).json({ message: "deleted cart item successfully" });
+      res.status(200).json({ data: "deleted cart item successfully" });
     } catch (error) {
       next(error);
     }

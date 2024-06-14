@@ -42,7 +42,7 @@ export class AddressController {
       const address_id = Number(req.params["addressId"]);
 
       await AddressService.delete(address_id);
-      res.status(200).json({ message: "deleted address successfully" });
+      res.status(200).json({ data: "deleted address successfully" });
     } catch (error) {
       next(error);
     }
