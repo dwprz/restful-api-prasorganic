@@ -9,7 +9,7 @@ import redis from "../../src/apps/redis.app";
 describe("PATCH /api/users/current/photo-profile", () => {
   let user_email: string;
   let user_password: string;
-  
+
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
@@ -38,7 +38,7 @@ describe("PATCH /api/users/current/photo-profile", () => {
     const result = await supertest(app)
       .patch(`/api/users/current/photo-profile`)
       .field("photo_profile", "")
-      .attach("photo_profile", __dirname + "/assets/profile.jpg")
+      .attach("image", __dirname + "/assets/profile.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
@@ -60,7 +60,7 @@ describe("PATCH /api/users/current/photo-profile", () => {
     const result = await supertest(app)
       .patch(`/api/users/current/photo-profile`)
       .field("photo_profile", "")
-      .attach("photo_profile", __dirname + "/assets/invalid-file.jpg")
+      .attach("image", __dirname + "/assets/invalid-file.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 

@@ -2,7 +2,7 @@ import "dotenv/config";
 import { EnvHelper } from "../helpers/env.helper";
 import axios from "axios";
 import validation from "../validations/validation";
-import { RajaOngkirValidation } from "../validations/raja-ongkir.validation";
+import { RajaOngkirValidation } from "../validations/schema/raja-ongkir.validation";
 import { RajaOngkirUtil } from "../utils/raja-ongkir.util";
 import ErrorResponse from "../error/response.error";
 import {

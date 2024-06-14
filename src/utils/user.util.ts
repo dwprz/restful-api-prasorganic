@@ -3,6 +3,7 @@ import ErrorResponse from "../error/response.error";
 import { User, UserLoginWithGoogle, UserRegister } from "../interfaces/user";
 import { UserHelper } from "../helpers/user.helper";
 import { SqlHelper } from "../helpers/sql.helper";
+import { ErrorHelper } from "../helpers/error.helper";
 
 export class UserUtil {
   static async create({ email, full_name, password }: UserRegister) {
@@ -22,8 +23,12 @@ export class UserUtil {
       const user = result.rows[0] as User;
 
       return user;
-    } catch (error) {
-      throw new ErrorResponse(400, "failed to create user");
+    } catch (error: any) {
+      if (error.code === "23505") {
+        throw new ErrorResponse(409, "user already exists");
+      }
+
+      throw ErrorHelper.catch("create user", error);
     } finally {
       client.release();
     }
@@ -42,9 +47,13 @@ export class UserUtil {
       const result = await client.query(query, [...field_values]);
       const user = result.rows[0] as User;
 
+      if (!user) {
+        throw new ErrorResponse(404, "user not found");
+      }
+
       return user;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to find user by: ${field_names}`);
+      throw ErrorHelper.catch(`find user by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -73,7 +82,7 @@ export class UserUtil {
 
       return users;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to find users by: ${field_names}`);
+      throw ErrorHelper.catch(`find users by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -83,10 +92,11 @@ export class UserUtil {
     const client = await pool.connect();
 
     const field_names = SqlHelper.getFieldNames(fields);
-    const field_values = SqlHelper.getFieldValues(fields);
-    const where_clause = SqlHelper.buildWhereClause(fields);
 
     try {
+      const field_values = SqlHelper.getFieldValues(fields);
+      const where_clause = SqlHelper.buildWhereClause(fields);
+
       const query = `SELECT CAST(COUNT(user_id) AS INTEGER) FROM users WHERE ${where_clause}`;
 
       const result = await client.query(query, field_values);
@@ -94,7 +104,7 @@ export class UserUtil {
 
       return total_users;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to get count by: ${field_names}`);
+      throw ErrorHelper.catch(`count users by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -103,11 +113,10 @@ export class UserUtil {
   static async updateByEmail(fields: Record<string, any>, email: string) {
     const client = await pool.connect();
 
-    const field_names = SqlHelper.getFieldNames(fields);
-    const field_values = SqlHelper.getFieldValues(fields);
-    const set_clause = SqlHelper.buildSetClause(fields);
-
     try {
+      const field_values = SqlHelper.getFieldValues(fields);
+      const set_clause = SqlHelper.buildSetClause(fields);
+
       const query = `
       UPDATE 
           users 
@@ -123,8 +132,12 @@ export class UserUtil {
 
       const { password, refresh_token, ...user } = result.rows[0] as User;
       return user;
-    } catch (error) {
-      throw new ErrorResponse(400, `failed to update user: ${field_names}.`);
+    } catch (error: any) {
+      if (error.code === "23505") {
+        throw new ErrorResponse(409, "email already exists");
+      }
+
+      throw ErrorHelper.catch("update user by email", error);
     } finally {
       client.release();
     }
@@ -156,7 +169,7 @@ export class UserUtil {
       const { password, refresh_token, ...user } = result.rows[0] as User;
       return user;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to upsert user by email");
+      throw ErrorHelper.catch("upsert user by email", error);
     } finally {
       client.release();
     }

@@ -10,10 +10,10 @@ import verifyAdminMiddleware from "../middlewares/verify-admin.middleware";
 
 const productRouter = express.Router();
 // super admin
-productRouter.post("/api/products", verifyTokenMiddleware, verifySuperAdminMiddleware, uploadImageMiddleware.single("product_image"), validateImageMiddleware, formatImageUrlMiddleware, ProductController.create);
+productRouter.post("/api/products", verifyTokenMiddleware, verifySuperAdminMiddleware, uploadImageMiddleware, validateImageMiddleware, formatImageUrlMiddleware, ProductController.create);
 productRouter.post("/api/products/deleted/:productId/restore", verifyTokenMiddleware, verifySuperAdminMiddleware, ProductController.restore);
 productRouter.patch("/api/products/:productId", verifyTokenMiddleware, verifySuperAdminMiddleware, ProductController.update);
-productRouter.patch("/api/products/:productId/image", verifyTokenMiddleware, verifySuperAdminMiddleware, uploadImageMiddleware.single("product_image"), validateImageMiddleware, formatImageUrlMiddleware, ProductController.updateImage);
+productRouter.patch("/api/products/:productId/image", verifyTokenMiddleware, verifySuperAdminMiddleware, uploadImageMiddleware, validateImageMiddleware, formatImageUrlMiddleware, ProductController.updateImage);
 productRouter.patch("/api/products/:productId/categories", verifyTokenMiddleware, verifySuperAdminMiddleware, ProductController.updateCategories);
 productRouter.delete("/api/products/:productId", verifyTokenMiddleware, verifySuperAdminMiddleware, ProductController.delete);
 

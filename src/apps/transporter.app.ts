@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import * as SMTPTransport from "nodemailer/lib/smtp-transport";
 import { TransporterHelper } from "../helpers/transporter.helper";
 import { EnvHelper } from "../helpers/env.helper";
+import "dotenv/config";
 
 const createTransporter = async () => {
   const GMAIL_MASTER = process.env.GMAIL_MASTER;

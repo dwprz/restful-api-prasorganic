@@ -1,5 +1,6 @@
 import ErrorResponse from "../error/response.error";
 import { AuthHelper } from "../helpers/auth.helper";
+import { EnvHelper } from "../helpers/env.helper";
 import { TemplateHelper } from "../helpers/template.helper";
 import { TransporterHelper } from "../helpers/transporter.helper";
 import { OTP } from "../interfaces/otp";
@@ -11,9 +12,10 @@ import {
 } from "../interfaces/user";
 import { AuthUtil } from "../utils/auth.util";
 import { UserUtil } from "../utils/user.util";
-import { AuthValidation } from "../validations/auth.validation";
+import { AuthValidation } from "../validations/schema/auth.validation";
 import validation from "../validations/validation";
 import bcrypt from "bcrypt";
+import "dotenv/config";
 
 export class AuthService {
   static async sendOtp(email: string) {
@@ -22,9 +24,7 @@ export class AuthService {
     const otp = AuthHelper.generateOtp();
     const GMAIL_MASTER = process.env.GMAIL_MASTER;
 
-    if (!GMAIL_MASTER) {
-      throw new ErrorResponse(422, "gmail master is not provided");
-    }
+    EnvHelper.validate({ GMAIL_MASTER });
 
     const template = TemplateHelper.render(
       process.cwd() + "/template/otp.html",
@@ -33,7 +33,7 @@ export class AuthService {
 
     const subject = "Verifycation With Otp";
 
-    await TransporterHelper.sendMail(GMAIL_MASTER, email, subject, template);
+    await TransporterHelper.sendMail(GMAIL_MASTER!, email, subject, template);
 
     await AuthUtil.upsertOtpByEmail(email, otp);
   }
@@ -42,18 +42,13 @@ export class AuthService {
     data = validation(AuthValidation.otp, data);
 
     const existing_otp = await AuthUtil.getOtpByEmail(data.email);
-    AuthHelper.verifyOtp(data.otp, existing_otp.otp);
+    AuthHelper.verifyOtp(data.otp, existing_otp!.otp);
 
     await AuthUtil.deleteOtpByEmail(data.email);
   }
 
   static async register(data: UserRegister) {
     data = validation(AuthValidation.register, data);
-    const existing_user = await UserUtil.findByFields({ email: data.email });
-
-    if (existing_user) {
-      throw new ErrorResponse(409, "user already exist");
-    }
 
     const encrypt_password = await bcrypt.hash(data.password, 10);
 
@@ -137,10 +132,10 @@ export class AuthService {
 
     const existing_user = await UserUtil.findByFields({ email });
 
-    if (!existing_user.password) {
+    if (!existing_user!.password) {
       throw new ErrorResponse(400, "the user does not have a password");
     }
 
-    await AuthHelper.comparePassword(password, existing_user.password);
+    await AuthHelper.comparePassword(password, existing_user!.password);
   }
 }

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { FileHelper } from "../helpers/file.helper";
+import ErrorResponse from "../error/response.error";
 
 function formatImageUrlMiddleware(
   req: Request,
@@ -21,8 +22,14 @@ function formatImageUrlMiddleware(
     }
 
     next();
-  } catch (error: any) {
-    res.status(error.status).json({ error: error.message });
+  } catch (error) {
+    if (error instanceof ErrorResponse) {
+      return res.status(error.status).json({ error: error.message });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "internal server error. please try again later" });
   }
 }
 

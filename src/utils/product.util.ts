@@ -3,6 +3,7 @@ import ErrorResponse from "../error/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
 import pool from "../apps/postgresql.app";
 import { ProductHelper } from "../helpers/product.helper";
+import { ErrorHelper } from "../helpers/error.helper";
 
 export class ProductUtil {
   static async createWithCategories(data: ProductInput) {
@@ -73,7 +74,7 @@ export class ProductUtil {
       return { ...product_res, categories };
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
-      throw new ErrorResponse(400, "failed to create product with categories");
+      throw ErrorHelper.catch("create product with categories", error);
     } finally {
       client.release();
     }
@@ -94,7 +95,7 @@ export class ProductUtil {
 
       return product;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to find product by: ${field_names}`);
+      throw ErrorHelper.catch(`find product by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -120,7 +121,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find random products");
+      throw ErrorHelper.catch("find random products", error);
     } finally {
       client.release();
     }
@@ -146,7 +147,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find products by name");
+      throw ErrorHelper.catch("find products by name", error);
     } finally {
       client.release();
     }
@@ -171,7 +172,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to find product by: ${field_names}`);
+      throw ErrorHelper.catch(`find product by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -215,7 +216,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find products by categories");
+      throw ErrorHelper.catch("find products by categories", error);
     } finally {
       client.release();
     }
@@ -244,7 +245,7 @@ export class ProductUtil {
 
       return product;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find products with categories");
+      throw ErrorHelper.catch("find products with categories", error);
     } finally {
       client.release();
     }
@@ -288,7 +289,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find products random");
+      throw ErrorHelper.catch("find products random", error);
     } finally {
       client.release();
     }
@@ -344,7 +345,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to get products with categories");
+      throw ErrorHelper.catch("find products with categories", error);
     } finally {
       client.release();
     }
@@ -360,7 +361,7 @@ export class ProductUtil {
 
       return products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find deleted products");
+      throw ErrorHelper.catch("find deleted products", error);
     } finally {
       client.release();
     }
@@ -377,7 +378,7 @@ export class ProductUtil {
 
       return total_products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count products");
+      throw ErrorHelper.catch("count products", error);
     } finally {
       client.release();
     }
@@ -386,6 +387,7 @@ export class ProductUtil {
   static async countByFields(fields: Record<string, any>) {
     const client = await pool.connect();
 
+    const field_names = SqlHelper.getFieldNames(fields);
     try {
       const where_clause = SqlHelper.buildWhereClause(fields);
       const field_values = SqlHelper.getFieldValues(fields);
@@ -403,7 +405,7 @@ export class ProductUtil {
 
       return total_products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count products by fields");
+      throw ErrorHelper.catch(`count products by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -428,7 +430,7 @@ export class ProductUtil {
 
       return total_products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count products by name");
+      throw ErrorHelper.catch("count products by name", error);
     } finally {
       client.release();
     }
@@ -463,7 +465,7 @@ export class ProductUtil {
 
       return total_products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count products by categories");
+      throw ErrorHelper.catch("count products by categories", error);
     } finally {
       client.release();
     }
@@ -479,7 +481,7 @@ export class ProductUtil {
 
       return total_products;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count deleted products");
+      throw ErrorHelper.catch("count deleted products", error);
     } finally {
       client.release();
     }
@@ -537,7 +539,7 @@ export class ProductUtil {
       return product;
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
-      throw new ErrorResponse(400, "failed to restore product");
+      throw ErrorHelper.catch("restore product", error);
     } finally {
       client.release();
     }
@@ -564,8 +566,12 @@ export class ProductUtil {
       const product = result.rows[0];
 
       return product;
-    } catch (error) {
-      throw new ErrorResponse(400, "failed to update product by fields");
+    } catch (error: any) {
+      if (error.code === "23505") {
+        throw new ErrorResponse(409, "product name already exists");
+      }
+
+      throw ErrorHelper.catch("update product by id", error);
     } finally {
       client.release();
     }
@@ -642,7 +648,7 @@ export class ProductUtil {
       await client.query("COMMIT TRANSACTION;");
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
-      throw new ErrorResponse(400, "failed to delete product");
+      throw ErrorHelper.catch("delete product by id", error);
     } finally {
       client.release();
     }

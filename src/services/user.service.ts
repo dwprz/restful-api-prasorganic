@@ -12,7 +12,7 @@ import {
   UserUpdateProfile,
 } from "../interfaces/user";
 import { UserUtil } from "../utils/user.util";
-import { UserValidation } from "../validations/user.validation";
+import { UserValidation } from "../validations/schema/user.validation";
 import validation from "../validations/validation";
 import { AuthService } from "./auth.service";
 import bcrypt from "bcrypt";
@@ -148,21 +148,13 @@ export class UserService {
 
     await AuthService.verifyOtp({ email: new_email, otp: otp });
 
-    try {
-      const user = await UserUtil.updateByEmail({ email: new_email }, email);
+    const user = await UserUtil.updateByEmail({ email: new_email }, email);
 
-      const access_token = AuthHelper.createAccessToken({
-        ...existing_user,
-        email: new_email,
-      });
+    const access_token = AuthHelper.createAccessToken({
+      ...existing_user,
+      email: new_email,
+    });
 
-      return { user, access_token };
-    } catch (error: any) {
-      if (error.code === "P2002") {
-        throw new ErrorResponse(409, "email already exist");
-      }
-
-      throw new ErrorResponse(400, "failed to update email");
-    }
+    return { user, access_token };
   }
 }

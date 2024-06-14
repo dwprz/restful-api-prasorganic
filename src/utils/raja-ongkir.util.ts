@@ -1,12 +1,14 @@
+import { ReplyError } from "ioredis";
 import redis from "../apps/redis.app";
 import ErrorResponse from "../error/response.error";
+import { ErrorHelper } from "../helpers/error.helper";
 import {
   City,
   Province,
   Subdistrict,
   Waybill,
 } from "../interfaces/raja-ongkir";
-import { RajaOngkirValidation } from "../validations/raja-ongkir.validation";
+import { RajaOngkirValidation } from "../validations/schema/raja-ongkir.validation";
 import validation from "../validations/validation";
 
 export class RajaOngkirUtil {
@@ -16,7 +18,7 @@ export class RajaOngkirUtil {
 
       return provinces;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to caching provinces");
+      throw ErrorHelper.catch("cache provinces", error);
     }
   }
 
@@ -30,7 +32,7 @@ export class RajaOngkirUtil {
 
       return cities;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to caching cities by province id");
+      throw ErrorHelper.catch("cache cities by province id", error);
     }
   }
 
@@ -47,7 +49,7 @@ export class RajaOngkirUtil {
 
       return subdistricts;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to caching subdistricts by city id");
+      throw ErrorHelper.catch("cache subdistricts by city id", error);
     }
   }
 
@@ -65,10 +67,7 @@ export class RajaOngkirUtil {
 
       return waybill;
     } catch (error) {
-      throw new ErrorResponse(
-        400,
-        "failed to caching waybill by number and courier"
-      );
+      throw ErrorHelper.catch("cache waybill by number and courier", error);
     }
   }
 
@@ -80,7 +79,7 @@ export class RajaOngkirUtil {
 
       return JSON.parse(provinces_cache);
     } catch (error) {
-      throw new ErrorResponse(400, "failed to find provinces cache");
+      throw ErrorHelper.catch("find provinces cache", error);
     }
   }
 
@@ -94,10 +93,7 @@ export class RajaOngkirUtil {
 
       return JSON.parse(cities);
     } catch (error) {
-      throw new ErrorResponse(
-        400,
-        "failed to find cities cache by province id"
-      );
+      throw ErrorHelper.catch("find cities cache by province id", error);
     }
   }
 
@@ -111,10 +107,7 @@ export class RajaOngkirUtil {
 
       return JSON.parse(subdistricts);
     } catch (error) {
-      throw new ErrorResponse(
-        400,
-        "failed to find subdistricts cache by city id"
-      );
+      throw ErrorHelper.catch("find subdistricts by city id", error);
     }
   }
 
@@ -136,10 +129,7 @@ export class RajaOngkirUtil {
 
       return JSON.parse(waybill);
     } catch (error) {
-      throw new ErrorResponse(
-        400,
-        "failed to find waybill cache by number and courier"
-      );
+      throw ErrorHelper.catch("find waybill by number and courier", error);
     }
   }
 }

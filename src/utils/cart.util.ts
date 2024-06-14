@@ -1,6 +1,7 @@
 import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
 import { CartHelper } from "../helpers/cart.helper";
+import { ErrorHelper } from "../helpers/error.helper";
 import { SqlHelper } from "../helpers/sql.helper";
 import { CartDelete, CartInput } from "../interfaces/cart";
 
@@ -44,7 +45,7 @@ export class CartUtil {
 
       return { ...cart_item, ...product };
     } catch (error) {
-      throw new ErrorResponse(400, "failed to create cart");
+      throw ErrorHelper.catch("create cart", error);
     } finally {
       client.release();
     }
@@ -79,7 +80,7 @@ export class CartUtil {
 
       return carts;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to get carts");
+      throw ErrorHelper.catch("find carts", error);
     } finally {
       client.release();
     }
@@ -105,7 +106,7 @@ export class CartUtil {
 
       return cart;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to find cart by user id`);
+      throw ErrorHelper.catch("find carts by user id", error);
     } finally {
       client.release();
     }
@@ -151,7 +152,7 @@ export class CartUtil {
 
       return carts;
     } catch (error) {
-      throw new ErrorResponse(400, `failed to find carts by product name`);
+      throw ErrorHelper.catch("find carts by product name", error);
     } finally {
       client.release();
     }
@@ -169,7 +170,7 @@ export class CartUtil {
 
       return total_cart_items;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count cart item by fields");
+      throw ErrorHelper.catch("count cart item", error);
     } finally {
       client.release();
     }
@@ -178,6 +179,7 @@ export class CartUtil {
   static async countByFields(fields: Record<string, any>) {
     const client = await pool.connect();
 
+    const field_names = SqlHelper.getFieldNames(fields);
     try {
       const where_clause = SqlHelper.buildWhereClause(fields);
       const field_values = SqlHelper.getFieldValues(fields);
@@ -195,7 +197,7 @@ export class CartUtil {
 
       return total_cart_items;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count cart item by fields");
+      throw ErrorHelper.catch(`count cart item by ${field_names}`, error);
     } finally {
       client.release();
     }
@@ -223,7 +225,7 @@ export class CartUtil {
 
       return total_cart_items;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to count cart item by product name");
+      throw ErrorHelper.catch("count cart item by product name", error);
     } finally {
       client.release();
     }
@@ -244,7 +246,7 @@ export class CartUtil {
 
       await client.query(query);
     } catch (error) {
-      throw new ErrorResponse(400, "failed to deleted cart item");
+      throw ErrorHelper.catch("delete cart item by user and item id", error);
     } finally {
       client.release();
     }

@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import "dotenv/config";
 import { JwtPayload, UserRequest } from "../interfaces/user";
 import { EnvHelper } from "../helpers/env.helper";
+import ErrorResponse from "../error/response.error";
 
 function verifyTokenMiddleware(
   req: Request,
@@ -26,8 +27,18 @@ function verifyTokenMiddleware(
 
     (req as UserRequest).user_data = jwt_payload;
     next();
-  } catch (error: any) {
-    return res.status(error.status || 401).json({ error: error.message });
+  } catch (error) {
+    if (error instanceof ErrorResponse) {
+      return res.status(error.status).json({ error: error.message });
+    }
+
+    if (error instanceof JsonWebTokenError) {
+      return res.status(401).json({ error: "unauthorized" });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "internal server error. please try again later" });
   }
 }
 

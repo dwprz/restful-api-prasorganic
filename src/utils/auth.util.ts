@@ -1,5 +1,6 @@
 import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
+import { ErrorHelper } from "../helpers/error.helper";
 import { OTP } from "../interfaces/otp";
 
 export class AuthUtil {
@@ -18,7 +19,7 @@ export class AuthUtil {
 
       await client.query(query, [email, otp]);
     } catch (error) {
-      throw new ErrorResponse(400, "failed to upsert otp by email");
+      throw ErrorHelper.catch("upsert otp by email", error);
     } finally {
       client.release();
     }
@@ -32,15 +33,15 @@ export class AuthUtil {
       SELECT * FROM otp WHERE email = $1;
       `;
 
-      const otp = (await client.query(query, [email])).rows[0] as OTP;
+      const result = await client.query(query, [email]);
 
-      if (!otp) {
-        throw new ErrorResponse(404, "no otp matches the email");
+      if (result.rowCount === 0) {
+        throw new ErrorResponse(404, "no otp match this email");
       }
 
-      return otp;
-    } catch (error: any) {
-      throw new ErrorResponse(error.status, error.message);
+      return result.rows[0] as OTP;
+    } catch (error) {
+      throw ErrorHelper.catch("get otp by email", error);
     } finally {
       client.release();
     }
@@ -52,9 +53,13 @@ export class AuthUtil {
       const query = `
       DELETE FROM otp WHERE email = $1 RETURNING *;`;
 
-      await client.query(query, [email]);
+      const result = await client.query(query, [email]);
+
+      if (result.rowCount === 0) {
+        throw new ErrorResponse(404, "no otp match this email");
+      }
     } catch (error) {
-      throw new ErrorResponse(400, "failed to delete otp");
+      throw ErrorHelper.catch("delete otp by email", error);
     } finally {
       client.release();
     }

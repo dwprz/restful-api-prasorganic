@@ -1,22 +1,31 @@
 import { Request, Response, NextFunction } from "express";
 import ResponseError from "../error/response.error";
+import { ZodError } from "zod";
+import QueryError from "../error/query.error";
+
 function errorMiddleware(
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  let status = 500;
-  let message = "internal server error. please try again later";
+  // error loging
+  err instanceof QueryError
+    ? console.log(`this log error: {${err.name}: ${err.message}}`)
+    : console.log(`this log error: ${err.message}`);
 
+  // error handling
   if (err instanceof ResponseError) {
-    status = err.status;
-    message = err.message;
+    return res.status(err.status).json({ error: err.message });
   }
 
-  console.log(`status: ${status}, message: ${err.message} | this log error`); 
+  if (err instanceof ZodError) {
+    return res.status(400).json({ error: err.format() });
+  }
 
-  res.status(status).json({ error: message });
+  return res
+    .status(500)
+    .json({ error: "internal server error. please try again later" });
 }
 
 export default errorMiddleware;

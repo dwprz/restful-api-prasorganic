@@ -5,7 +5,7 @@ import {
   ProductUpdate,
   ProductImageUpdate,
 } from "../interfaces/product";
-import { ProductValidation } from "../validations/product.validation";
+import { ProductValidation } from "../validations/schema/product.validation";
 import validation from "../validations/validation";
 import { ProductUtil } from "../utils/product.util";
 import { PagingHelper } from "../helpers/paging.helper";

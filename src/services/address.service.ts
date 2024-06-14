@@ -1,6 +1,6 @@
 import { AddressInput, AddressUpdate } from "../interfaces/address";
 import validation from "../validations/validation";
-import { AddressValidation } from "../validations/address.validation";
+import { AddressValidation } from "../validations/schema/address.validation";
 import { AddressUtil } from "../utils/address.util";
 
 export class AddressService {

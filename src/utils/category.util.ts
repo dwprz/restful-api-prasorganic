@@ -1,5 +1,6 @@
 import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
+import { ErrorHelper } from "../helpers/error.helper";
 import { SqlHelper } from "../helpers/sql.helper";
 
 export class CategoryUtil {
@@ -94,7 +95,7 @@ export class CategoryUtil {
       await client.query("COMMIT TRANSACTION;");
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
-      throw new ErrorResponse(400, "failed to update categories");
+      throw ErrorHelper.catch("update categories", error);
     } finally {
       client.release();
     }

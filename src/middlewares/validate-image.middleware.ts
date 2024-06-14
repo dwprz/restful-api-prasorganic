@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { NextFunction, Request, Response } from "express";
 import { FileHelper } from "../helpers/file.helper";
+import ErrorResponse from "../error/response.error";
 
 const validateImageMiddleware = async (
   req: Request,
@@ -11,10 +12,16 @@ const validateImageMiddleware = async (
     await FileHelper.validateImageWithMagicNumber(req.file);
 
     next();
-  } catch (error: any) {
+  } catch (error) {
     FileHelper.deleteByPath(req.file?.path);
 
-    return res.status(error.status || 500).json({ error: error.message });
+    if (error instanceof ErrorResponse) {
+      return res.status(error.status).json({ error: error.message });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "internal server error. please try again later" });
   }
 };
 

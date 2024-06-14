@@ -2,6 +2,7 @@ import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
 import { AddressInput, AddressUpdate } from "../interfaces/address";
+import { ErrorHelper } from "../helpers/error.helper";
 
 export class AddressUtil {
   static async create(data: AddressInput) {
@@ -45,7 +46,8 @@ export class AddressUtil {
       return address;
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
-      throw new ErrorResponse(400, "failed to create address");
+
+      throw ErrorHelper.catch("create address", error);
     } finally {
       client.release();
     }
@@ -61,7 +63,7 @@ export class AddressUtil {
 
       return addresses;
     } catch (error) {
-      throw new ErrorResponse(400, "failed to get addresses by user id");
+      throw ErrorHelper.catch("find addresses by user id", error);
     } finally {
       client.release();
     }
@@ -93,7 +95,8 @@ export class AddressUtil {
 
       const query = `
       UPDATE 
-          addresses SET ${set_clause} 
+          addresses SET ${set_clause},
+          updated_at = now() 
       WHERE 
           address_id = ${data.address_id} 
       RETURNING *;
@@ -102,12 +105,17 @@ export class AddressUtil {
       const result = await client.query(query, field_values);
       const address = result.rows[0];
 
+      if (result.rowCount === 0) {
+        throw new ErrorResponse(404, "no address match this id");
+      }
+
       await client.query("COMMIT TRANSACTION;");
 
       return address;
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
-      throw new ErrorResponse(400, "failed to update address by id");
+
+      throw ErrorHelper.catch("update address by id", error);
     } finally {
       client.release();
     }
@@ -118,9 +126,13 @@ export class AddressUtil {
     try {
       const query = `DELETE FROM addresses WHERE address_id = ${address_id};`;
 
-      await client.query(query);
+      const result = await client.query(query);
+
+      if (result.rowCount === 0) {
+        throw new ErrorResponse(400, "no address match this id");
+      }
     } catch (error) {
-      throw new ErrorResponse(400, "failed to delete address by id");
+      throw ErrorHelper.catch("delete address by id", error);
     } finally {
       client.release();
     }

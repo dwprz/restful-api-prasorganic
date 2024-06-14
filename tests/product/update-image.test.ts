@@ -54,7 +54,7 @@ describe("PATCH /api/products/:productId/image", () => {
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/image`)
       .field("image", "http://example.com/image")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
@@ -76,7 +76,7 @@ describe("PATCH /api/products/:productId/image", () => {
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/image`)
       .field("image", "http://example.com/image")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
@@ -96,7 +96,7 @@ describe("PATCH /api/products/:productId/image", () => {
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/image`)
       .field("image", "http://example.com/image")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", ["access_token:INVALID ACCESS TOKEN"])
       .set("Authorization", AUTHORIZATION_SECRET!);
 
@@ -118,7 +118,7 @@ describe("PATCH /api/products/:productId/image", () => {
     const result = await supertest(app)
       .patch(`/api/products/${product_id}/image`)
       .field("image", "http://example.com/image")
-      .attach("product_image", __dirname + "/assets/invalid-file.jpg")
+      .attach("image", __dirname + "/assets/invalid-file.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 

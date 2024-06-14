@@ -16,6 +16,6 @@ userRouter.get("/api/users/current", verifyTokenMiddleware, UserController.getCu
 userRouter.patch("/api/users/current", verifyTokenMiddleware, UserController.updateProfile);
 userRouter.patch("/api/users/current/password", verifyTokenMiddleware, UserController.updatePassword);
 userRouter.patch("/api/users/current/email", verifyTokenMiddleware, UserController.updateEmail);
-userRouter.patch("/api/users/current/photo-profile", verifyTokenMiddleware, uploadImageMiddleware.single('photo_profile'), validateImageMiddleware, formatImageUrlMiddleware, UserController.updatePhotoProfile);
+userRouter.patch("/api/users/current/photo-profile", verifyTokenMiddleware, uploadImageMiddleware, validateImageMiddleware, formatImageUrlMiddleware, UserController.updatePhotoProfile);
 
 export default userRouter;

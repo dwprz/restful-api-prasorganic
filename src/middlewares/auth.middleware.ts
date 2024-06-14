@@ -13,8 +13,14 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
     }
 
     next();
-  } catch (error: any) {
-    return res.status(error.status).json({ error: error.message });
+  } catch (error) {
+    if (error instanceof ErrorResponse) {
+      return res.status(error.status).json({ error: error.message });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "internal server error. please try again later" });
   }
 }
 

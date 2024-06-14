@@ -1,5 +1,6 @@
 import { Redis } from "ioredis";
 import { EnvHelper } from "../helpers/env.helper";
+import "dotenv/config";
 
 const REDIS_HOST = process.env.REDIS_HOST;
 const REDIS_PORT = process.env.REDIS_PORT;

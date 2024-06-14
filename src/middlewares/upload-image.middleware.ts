@@ -1,4 +1,5 @@
-import multer from "multer";
+import { NextFunction, Request, Response } from "express";
+import multer, { MulterError } from "multer";
 
 const storage = multer.diskStorage({
   destination(req, file, callback) {
@@ -13,11 +14,36 @@ const storage = multer.diskStorage({
   },
 });
 
-const uploadImageMiddleware = multer({
+const upload = multer({
   storage: storage,
   limits: {
-    fieldSize: 1 * 1024 * 1024, // max 1 mb
+    fileSize: 1 * 1024 * 1024, // max 1 mb
   },
 });
+
+function uploadImageMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  upload.single("image")(req, res, (error) => {
+    if (error instanceof MulterError) {
+      if (error.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(400)
+          .json({ error: "file size is too large. max 1mb allowed" });
+      }
+
+      return res.status(400).json({ error: "failed to upload image" });
+    } else if (error) {
+
+      return res
+        .status(500)
+        .json({ error: "internal server error. please try again later" });
+    } else {
+      next();
+    }
+  });
+}
 
 export default uploadImageMiddleware;
