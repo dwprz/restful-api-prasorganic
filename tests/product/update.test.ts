@@ -3,6 +3,7 @@ import app from "../../src/apps/application.app";
 import { ProductTestUtil } from "./product-test.util";
 import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/product/update.test.ts
 
@@ -35,6 +36,7 @@ describe("PATCH /api/products/:productId", () => {
     await UserTestUtil.deleteSuperAdmin();
     await UserTestUtil.deleteAdmin();
     await pool.end();
+    await redis.quit();
   });
 
   it("update product should be successful", async () => {

@@ -4,6 +4,7 @@ import "dotenv/config";
 import { ProductTestUtil } from "./product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import { UserTestUtil } from "../user/user-test.util";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/product/get-with-categories-by-categories.test.ts
 
@@ -36,6 +37,7 @@ describe("GET /api/products-with-categories", () => {
     await UserTestUtil.deleteAdmin();
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("get products with categories by categories should be successful", async () => {

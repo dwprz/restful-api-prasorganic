@@ -3,6 +3,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import { AuthTestUtil } from "../auth/auth-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/user/update-email.test.ts
 
@@ -29,6 +30,7 @@ describe("PATCH /api/users/current/email", () => {
     await AuthTestUtil.deleteOtpByEmail(new_user_email);
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("update user email should be successful", async () => {

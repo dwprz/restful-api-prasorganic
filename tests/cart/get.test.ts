@@ -4,6 +4,7 @@ import { UserTestUtil } from "../user/user-test.util";
 import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/cart/get.test.ts
 
@@ -41,6 +42,7 @@ describe("GET /api/carts", () => {
     await UserTestUtil.deleteAdmin();
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("get cart should be successful", async () => {

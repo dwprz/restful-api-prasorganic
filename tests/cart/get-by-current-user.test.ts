@@ -4,6 +4,7 @@ import { UserTestUtil } from "../user/user-test.util";
 import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/cart/get-by-current-user.test.ts
 
@@ -33,6 +34,7 @@ describe("GET /api/carts/users/current", () => {
     await ProductTestUtil.deleteWithCategories(product_id);
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("get cart by current user should be successful", async () => {

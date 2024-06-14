@@ -3,6 +3,7 @@ import app from "../../src/apps/application.app";
 import { ProductTestUtil } from "./product-test.util";
 import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/product/restore.test.ts
 
@@ -35,6 +36,7 @@ describe("POST /api/products/deleted/:productId/restore", () => {
     await UserTestUtil.deleteSuperAdmin();
     await UserTestUtil.deleteAdmin();
     await pool.end();
+    await redis.quit();
   });
 
   it("restore product should be successful", async () => {
@@ -112,7 +114,7 @@ describe("POST /api/products/deleted/:productId/restore", () => {
     expect(result.body.error).toBeDefined();
   });
 
-  it("restore product should fail if invalid request", async () => {
+  it("restore product should fail if product not found", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
@@ -124,11 +126,11 @@ describe("POST /api/products/deleted/:productId/restore", () => {
     const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
-      .post(`/api/products/deleted/${product_id}/restore`)
+      .post(`/api/products/deleted/10000000/restore`)
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
-    expect(result.status).toBe(400);
+    expect(result.status).toBe(404);
     expect(result.body.error).toBeDefined();
   });
 });

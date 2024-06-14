@@ -4,6 +4,7 @@ import { UserTestUtil } from "../user/user-test.util";
 import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/cart/delete.test.ts
 
@@ -38,6 +39,7 @@ describe("DELETE /api/carts/items/:cartItemId", () => {
     await ProductTestUtil.deleteWithCategories(product_id);
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("delete cart should be successful", async () => {

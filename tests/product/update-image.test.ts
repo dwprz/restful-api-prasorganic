@@ -4,6 +4,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
 import "dotenv/config";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/product/update-image.test.ts
 
@@ -36,6 +37,7 @@ describe("PATCH /api/products/:productId/image", () => {
     await UserTestUtil.deleteSuperAdmin();
     await UserTestUtil.deleteAdmin();
     await pool.end();
+    await redis.quit();
   });
 
   it("update product image should be successful", async () => {

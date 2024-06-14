@@ -4,6 +4,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
 import "dotenv/config";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/product/update-categories.test.ts
 
@@ -41,13 +42,14 @@ describe("PATCH /api/products/:productId/categories", () => {
     await UserTestUtil.deleteSuperAdmin();
     await UserTestUtil.deleteAdmin();
     await pool.end();
+    await redis.quit();
   });
 
   afterEach(async () => {
     await ProductTestUtil.deleteWithCategories(product_id);
   });
 
-  test.only("update product categories should be successful", async () => {
+  it("update product categories should be successful", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({

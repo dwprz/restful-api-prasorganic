@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { AuthTestUtil } from "./auth-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/auth/send-otp.test.ts
 
@@ -12,6 +13,7 @@ describe("POST /api/users/current/otp", () => {
   afterAll(async () => {
     await AuthTestUtil.deleteOtpByEmail(user_email);
     await pool.end();
+    await redis.quit();
   });
 
   it("send otp should be successful", async () => {

@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/auth/register.test.ts
 
@@ -17,6 +18,7 @@ describe("POST /api/users/current/register", () => {
 
   afterAll(async () => {
     await pool.end();
+    await redis.quit();
   });
 
   it("register user should be successful", async () => {

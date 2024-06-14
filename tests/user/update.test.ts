@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/user/update.test.ts
 
@@ -9,7 +10,7 @@ describe("PATCH /api/users/current", () => {
   let user_email: string;
   let user_fullName: string;
   let user_password: string;
-  
+
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
@@ -22,6 +23,7 @@ describe("PATCH /api/users/current", () => {
   afterAll(async () => {
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("update user should be successful", async () => {

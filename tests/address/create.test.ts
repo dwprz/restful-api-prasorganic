@@ -3,6 +3,7 @@ import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/address/create.test.ts
 
@@ -24,7 +25,7 @@ describe("POST /api/addresses", () => {
     await AddressTestUtil.delete(user_id);
     await UserTestUtil.deleteUser();
     await pool.end();
-
+    await redis.quit();
   });
 
   it("create address should be successful", async () => {

@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/user/update-photo-profile.test.ts
 
@@ -20,6 +21,7 @@ describe("PATCH /api/users/current/photo-profile", () => {
   afterAll(async () => {
     await UserTestUtil.deleteUser();
     await pool.end();
+    await redis.quit();
   });
 
   it("update user photo profile should be successful", async () => {

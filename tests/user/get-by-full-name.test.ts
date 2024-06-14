@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
+import redis from "../../src/apps/redis.app";
 
 // npx jest tests/user/get-by-full-name.test.ts
 
@@ -9,7 +10,7 @@ describe("GET /api/users/full-name/:fullName", () => {
   let admin_email: string;
   let admin_password: string;
   let admin_full_name: string;
-  
+
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
@@ -22,6 +23,7 @@ describe("GET /api/users/full-name/:fullName", () => {
   afterAll(async () => {
     await UserTestUtil.deleteAdmin();
     await pool.end();
+    await redis.quit();
   });
 
   it("get users by full name should be successful", async () => {
