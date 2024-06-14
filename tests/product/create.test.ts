@@ -15,6 +15,8 @@ describe("POST /api/products", () => {
   let admin_email: string;
   let admin_password: string;
 
+  let product_id: number | undefined;
+
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
@@ -25,6 +27,12 @@ describe("POST /api/products", () => {
     const admin = await UserTestUtil.createAdmin();
     admin_email = admin!.email;
     admin_password = admin!.password;
+  });
+
+  afterEach(async () => {
+    if (product_id) {
+      await ProductTestUtil.deleteWithCategories(product_id);
+    }
   });
 
   afterAll(async () => {
@@ -54,15 +62,14 @@ describe("POST /api/products", () => {
       .field("categories", "grains")
       .field("categories", "kurma")
       .field("categories", "organik")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
     expect(result.status).toBe(200);
     expect(result.body.data).toBeDefined();
 
-    const product_id = result.body.data.product_id;
-    await ProductTestUtil.deleteWithCategories(product_id);
+    product_id = result.body.data?.product_id || undefined;
   });
 
   it("create product with one category should be successful", async () => {
@@ -83,15 +90,14 @@ describe("POST /api/products", () => {
       .field("stock", 250)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
     expect(result.status).toBe(200);
     expect(result.body.data).toBeDefined();
 
-    const product_id = result.body.data.product_id;
-    await ProductTestUtil.deleteWithCategories(product_id);
+    product_id = result.body.data?.product_id || undefined;
   });
 
   it("create product should fail if image file is invalid", async () => {
@@ -112,12 +118,42 @@ describe("POST /api/products", () => {
       .field("stock", 250)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
-      .attach("product_image", __dirname + "/assets/invalid-file.jpg")
+      .attach("image", __dirname + "/assets/invalid-file.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
     expect(result.status).toBe(400);
     expect(result.body.error).toBeDefined();
+
+    product_id = result.body.data?.product_id || undefined;
+  });
+
+  it("create product should fail if file size is more than 1mb", async () => {
+    const login_result = await supertest(app)
+      .post("/api/users/current/login")
+      .send({
+        email: super_admin_email,
+        password: super_admin_password,
+      })
+      .set("Authorization", AUTHORIZATION_SECRET!);
+
+    const cookies = login_result.get("Set-Cookie");
+
+    const result = await supertest(app)
+      .post("/api/products")
+      .field("product_name", "PRODUCT TEST")
+      .field("price", 10000)
+      .field("stock", 250)
+      .field("description", "DESCRIPTION TEST")
+      .field("categories", "grains")
+      .attach("image", __dirname + "/assets/image-size-more-than-1mb.jpg")
+      .set("Cookie", cookies)
+      .set("Authorization", AUTHORIZATION_SECRET!);
+
+    expect(result.status).toBe(400);
+    expect(result.body.error).toBeDefined();
+
+    product_id = result.body.data?.product_id || undefined;
   });
 
   it("create product should fail if not super admin", async () => {
@@ -140,12 +176,14 @@ describe("POST /api/products", () => {
       .field("categories", "grains")
       .field("categories", "kurma")
       .field("categories", "organik")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", cookies)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
     expect(result.status).toBe(403);
     expect(result.body.error).toBeDefined();
+
+    product_id = result.body.data?.product_id || undefined;
   });
 
   it("create product should fail if without authorization header", async () => {
@@ -168,10 +206,12 @@ describe("POST /api/products", () => {
       .field("categories", "grains")
       .field("categories", "kurma")
       .field("categories", "organik")
-      .attach("product_image", __dirname + "/assets/product-image.jpg")
+      .attach("image", __dirname + "/assets/product-image.jpg")
       .set("Cookie", cookies);
 
     expect(result.status).toBe(401);
     expect(result.body.error).toBeDefined();
+
+    product_id = result.body.data?.product_id || undefined;
   });
 });
