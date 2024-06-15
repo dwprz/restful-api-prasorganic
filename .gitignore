@@ -5,3 +5,5 @@ dist
 dummy.*
 
 docs/sql
+postgresql.conf
+redis.conf
