@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRequest } from "../interfaces/user";
+import { UserRequest } from "../interfaces/user.interface";
 
 function verifySuperAdminMiddleware(
   req: Request,

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRequest } from "../interfaces/user";
+import { UserRequest } from "../interfaces/user.interface";
 import { AddressService } from "../services/address.service";
 
 export class AddressController {

@@ -1,13 +1,11 @@
-import { ReplyError } from "ioredis";
 import redis from "../apps/redis.app";
-import ErrorResponse from "../error/response.error";
 import { ErrorHelper } from "../helpers/error.helper";
 import {
   City,
   Province,
   Subdistrict,
   Waybill,
-} from "../interfaces/raja-ongkir";
+} from "../interfaces/raja-ongkir.interface";
 import { RajaOngkirValidation } from "../validations/schema/raja-ongkir.validation";
 import validation from "../validations/validation";
 

@@ -1,51 +1,48 @@
-// import { Request, Response, NextFunction } from "express";
-// import { orderService } from "../../services/order.service";
-// import { UserValidationRequest } from "../../interfaces/user";
-// import { adminControllerUtil } from "../admin/admin.util";
+import { NextFunction, Request, Response } from "express";
+import { OrderService } from "../services/order.service";
+import { UserRequest } from "../interfaces/user.interface";
+import { MidtransService } from "../services/midtrans.service";
+import { nanoid } from "nanoid";
 
-// const create = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { id, username } = (req as UserValidationRequest).userData;
-//     req.body.order.user_id = id;
-//     req.body.order.username = username;
-//     const reqCreate = req.body;
+export class OrderController {
+  static async checkout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { user_id } = (req as UserRequest).user_data;
 
-//     const result = await orderService.create(reqCreate);
-//     res.status(200).json({ data: result });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+      const order_id = nanoid();
 
-// const getByUser = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const user_id = (req as UserValidationRequest).userData.id;
+      const { token, redirect_url } = await MidtransService.transaction({
+        ...req.body.order,
+        user_id,
+        order_id,
+      });
 
-//     const result = await orderService.getByUser(user_id);
-//     res.status(200).json({ data: result });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+      req.body.order.snap_token = token;
+      req.body.order.snap_redirect_url = redirect_url;
+      req.body.order.user_id = user_id;
+      req.body.order.order_id = order_id;
 
-// const updateStatus = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     adminControllerUtil.verifySuperAdmin(req);
-//     const reqUpdate = req.body;
+      const result = await OrderService.create(req.body);
 
-//     await orderService.updateStatus(reqUpdate);
-//     res.status(200).json({ message: "success update status" });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+      res.status(201).json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-// export const orderController = {
-//   create,
-//   getByUser,
-//   updateStatus,
-// };
+  static async transactionNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      MidtransService.handleWebhook(req.body).then((result) => {
+        console.log("transaction notification | ", result);
+      });
+
+      res.status(200).json({ data: "OK" });
+    } catch (error) {
+      next(error);
+    }
+  }
+}

@@ -1,14 +1,13 @@
 import jwt from "jsonwebtoken";
 import { Request } from "express";
-import { JwtDecoded } from "../types/jwt.type";
-import { Tokens } from "./token";
+import { Tokens } from "./token.interface";
 
 export interface User {
   user_id: number;
   email: string;
   full_name: string;
   password?: string | null;
-  role: $Enums.UserRole;
+  role: UserRole;
   photo_profile: string | null;
   whatsapp: string | null;
   refresh_token?: string | null;
@@ -102,7 +101,7 @@ export interface JwtPayload extends jwt.JwtPayload {
   exp: number;
 }
 
-enum UserRole {
+export enum UserRole {
   USER = "USER",
   ADMIN = "ADMIN",
   SUPER_ADMIN = "SUPER_ADMIN",

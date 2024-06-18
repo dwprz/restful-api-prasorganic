@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../services/auth.service";
-import { UserRequest } from "../interfaces/user";
+import { UserRequest } from "../interfaces/user.interface";
 
 export class AuthController {
   static async sendOtp(req: Request, res: Response, next: NextFunction) {

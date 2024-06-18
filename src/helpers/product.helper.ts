@@ -1,4 +1,4 @@
-import { Product } from "../interfaces/product";
+import { Product } from "../interfaces/product.interface";
 
 export class ProductHelper {
   static transformWithCategories(products: Product[]): Product[] {

@@ -1,4 +1,4 @@
-import { UserRole } from "./user";
+import { UserRole } from "./user.interface";
 
 export interface CartInput {
   user_id: number;

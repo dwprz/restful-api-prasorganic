@@ -1,4 +1,4 @@
-import { CartDetails } from "../interfaces/cart";
+import { CartDetails } from "../interfaces/cart.interface";
 
 export class CartHelper {
   static transform(carts: any) {

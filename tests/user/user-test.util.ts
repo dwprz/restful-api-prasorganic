@@ -1,6 +1,6 @@
 import pool from "../../src/apps/postgresql.app";
 import bcrypt from "bcrypt";
-import { User } from "../../src/interfaces/user";
+import { User } from "../../src/interfaces/user.interface";
 
 export class UserTestUtil {
   private static user = {

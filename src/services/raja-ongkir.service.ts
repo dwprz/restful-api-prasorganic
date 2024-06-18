@@ -11,7 +11,7 @@ import {
   shippingRateCreate,
   Subdistrict,
   Waybill,
-} from "../interfaces/raja-ongkir";
+} from "../interfaces/raja-ongkir.interface";
 
 export class RajaOngkirService {
   static async createShippingRate(queries: shippingRateCreate) {

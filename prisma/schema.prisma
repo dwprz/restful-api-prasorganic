@@ -142,12 +142,14 @@ model Address {
 }
 
 model Order {
-  order_id        Int     @id @default(autoincrement())
-  total_net_price Int     @db.Integer
-  courier         String  @db.VarChar(50)
-  payment_method  String  @db.VarChar(50)
-  status          String  @db.VarChar(20)
-  waybill_number  String? @db.VarChar(100)
+  order_id          String      @id
+  gross_amount      Int         @db.Integer
+  courier           String      @db.VarChar(50)
+  payment_method    String?     @db.VarChar(50)
+  status            OrderStatus @default(PENDING_PAYMENT)
+  snap_token        String
+  snap_redirect_url String
+  waybill_number    String?     @db.VarChar(100)
 
   user_id Int    @db.Integer
   email   String @db.VarChar(100)
@@ -170,6 +172,7 @@ model Order {
 
 enum OrderStatus {
   PENDING_PAYMENT
+  PAID
   ON_PROGRESS
   COMPLETED
   CANCELED
@@ -179,16 +182,15 @@ enum OrderStatus {
 }
 
 model ProductOrder {
-  product_order_history_id Int      @id @default(autoincrement())
-  order_id                 Int
-  product_id               Int      @db.Integer
-  product_name             String   @db.VarChar(100)
-  image                    String   @db.VarChar(300)
-  price                    Int      @db.Integer
-  quantity                 Int      @db.Integer
-  total_gross_price        Int      @db.Integer
-  created_at               DateTime @default(now())
-  order                    Order    @relation(fields: [order_id], references: [order_id])
+  product_order_history_id Int    @id @default(autoincrement())
+  order_id                 String
+  product_id               Int    @db.Integer
+  product_name             String @db.VarChar(100)
+  image                    String @db.VarChar(300)
+  price                    Int    @db.Integer
+  quantity                 Int    @db.Integer
+  total_gross_price        Int    @db.Integer
+  order                    Order  @relation(fields: [order_id], references: [order_id])
 
   @@map("products_orders")
 }

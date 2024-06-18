@@ -1,7 +1,7 @@
 import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
 import { ErrorHelper } from "../helpers/error.helper";
-import { OTP } from "../interfaces/otp";
+import { OTP } from "../interfaces/otp.interface";
 
 export class AuthUtil {
   static async upsertOtpByEmail(email: string, otp: string) {

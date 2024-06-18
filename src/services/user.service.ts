@@ -10,7 +10,7 @@ import {
   UserUpdatePassword,
   UserUpdatePhotoProfile,
   UserUpdateProfile,
-} from "../interfaces/user";
+} from "../interfaces/user.interface";
 import { UserUtil } from "../utils/user.util";
 import { UserValidation } from "../validations/schema/user.validation";
 import validation from "../validations/validation";

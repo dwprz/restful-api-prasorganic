@@ -1,6 +1,6 @@
 import pool from "../../src/apps/postgresql.app";
 import { SqlHelper } from "../../src/helpers/sql.helper";
-import { Product } from "../../src/interfaces/product";
+import { Product } from "../../src/interfaces/product.interface";
 
 export class ProductTestUtil {
   private static product = {

@@ -1,9 +1,10 @@
-import { Product, ProductInput } from "../interfaces/product";
+import { Product, ProductInput } from "../interfaces/product.interface";
 import ErrorResponse from "../error/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
 import pool from "../apps/postgresql.app";
 import { ProductHelper } from "../helpers/product.helper";
 import { ErrorHelper } from "../helpers/error.helper";
+import { ProductOrder } from "../interfaces/order.interface";
 
 export class ProductUtil {
   static async createWithCategories(data: ProductInput) {
@@ -574,6 +575,29 @@ export class ProductUtil {
       throw ErrorHelper.catch("update product by id", error);
     } finally {
       client.release();
+    }
+  }
+
+  static async rollbackStocks(products_order: ProductOrder[]) {
+    const client = await pool.connect();
+    try {
+      for (const { quantity, product_id } of products_order) {
+        const query = `
+        UPDATE 
+            products
+        SET
+            stock = stock + $1
+        WHERE
+            product_id = $2
+        RETURNING *;
+        `;
+
+        const result = await client.query(query, [quantity, product_id]);
+
+        console.log(result.rows);
+      }
+    } catch (error) {
+      throw ErrorHelper.catch("rollback stocks by ids", error);
     }
   }
 

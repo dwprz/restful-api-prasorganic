@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRequest, UserRole } from "../interfaces/user";
+import { UserRequest, UserRole } from "../interfaces/user.interface";
 import { UserService } from "../services/user.service";
 import { FileHelper } from "../helpers/file.helper";
 

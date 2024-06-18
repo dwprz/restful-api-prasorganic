@@ -3,7 +3,7 @@ import ErrorResponse from "../error/response.error";
 import { CartHelper } from "../helpers/cart.helper";
 import { ErrorHelper } from "../helpers/error.helper";
 import { SqlHelper } from "../helpers/sql.helper";
-import { CartDelete, CartInput } from "../interfaces/cart";
+import { CartDelete, CartInput } from "../interfaces/cart.interface";
 
 export class CartUtil {
   static async create(data: CartInput) {

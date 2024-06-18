@@ -1,4 +1,4 @@
-import { User } from "../interfaces/user";
+import { User } from "../interfaces/user.interface";
 
 export class UserHelper {
   static transform(users: User[]) {

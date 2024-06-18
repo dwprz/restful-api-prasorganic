@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { CartService } from "../services/cart.service";
-import { UserRequest } from "../interfaces/user";
+import { UserRequest } from "../interfaces/user.interface";
 
 export class CartController {
   static async create(req: Request, res: Response, next: NextFunction) {

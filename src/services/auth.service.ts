@@ -3,13 +3,13 @@ import { AuthHelper } from "../helpers/auth.helper";
 import { EnvHelper } from "../helpers/env.helper";
 import { TemplateHelper } from "../helpers/template.helper";
 import { TransporterHelper } from "../helpers/transporter.helper";
-import { OTP } from "../interfaces/otp";
+import { OTP } from "../interfaces/otp.interface";
 import {
   UserAutnenticate,
   UserLogin,
   UserLoginWithGoogle,
   UserRegister,
-} from "../interfaces/user";
+} from "../interfaces/user.interface";
 import { AuthUtil } from "../utils/auth.util";
 import { UserUtil } from "../utils/user.util";
 import { AuthValidation } from "../validations/schema/auth.validation";

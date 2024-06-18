@@ -1,4 +1,4 @@
-import { AddressInput, AddressUpdate } from "../interfaces/address";
+import { AddressInput, AddressUpdate } from "../interfaces/address.interface";
 import validation from "../validations/validation";
 import { AddressValidation } from "../validations/schema/address.validation";
 import { AddressUtil } from "../utils/address.util";

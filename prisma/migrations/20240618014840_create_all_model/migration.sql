@@ -2,7 +2,7 @@
 CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PENDING_PAYMENT', 'ON_PROGRESS', 'COMPLETED', 'CANCELED', 'FAILED', 'REFUND_PROCESSED', 'REFUND_COMPLETED');
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING_PAYMENT', 'PAID', 'ON_PROGRESS', 'COMPLETED', 'CANCELED', 'FAILED', 'REFUND_PROCESSED', 'REFUND_COMPLETED');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -119,11 +119,13 @@ CREATE TABLE "addresses" (
 
 -- CreateTable
 CREATE TABLE "orders" (
-    "order_id" SERIAL NOT NULL,
-    "total_net_price" INTEGER NOT NULL,
+    "order_id" TEXT NOT NULL,
+    "gross_amount" INTEGER NOT NULL,
     "courier" VARCHAR(50) NOT NULL,
-    "payment_method" VARCHAR(50) NOT NULL,
-    "status" VARCHAR(20) NOT NULL,
+    "payment_method" VARCHAR(50),
+    "status" "OrderStatus" NOT NULL DEFAULT 'PENDING_PAYMENT',
+    "snap_token" TEXT NOT NULL,
+    "snap_redirect_url" TEXT NOT NULL,
     "waybill_number" VARCHAR(100),
     "user_id" INTEGER NOT NULL,
     "email" VARCHAR(100) NOT NULL,
@@ -143,14 +145,13 @@ CREATE TABLE "orders" (
 -- CreateTable
 CREATE TABLE "products_orders" (
     "product_order_history_id" SERIAL NOT NULL,
-    "order_id" INTEGER NOT NULL,
+    "order_id" TEXT NOT NULL,
     "product_id" INTEGER NOT NULL,
     "product_name" VARCHAR(100) NOT NULL,
     "image" VARCHAR(300) NOT NULL,
     "price" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "total_gross_price" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "products_orders_pkey" PRIMARY KEY ("product_order_history_id")
 );

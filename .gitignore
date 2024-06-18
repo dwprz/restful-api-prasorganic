@@ -1,9 +1,9 @@
 node_modules
 dist
+docs/sql
 
 .env
 dummy.*
-
-docs/sql
 postgresql.conf
 redis.conf
+ngrok.yaml

@@ -1,6 +1,6 @@
 import ErrorResponse from "../error/response.error";
 import { PagingHelper } from "../helpers/paging.helper";
-import { CartByProductName, CartDelete, CartInput } from "../interfaces/cart";
+import { CartByProductName, CartDelete, CartInput } from "../interfaces/cart.interface";
 import { CartUtil } from "../utils/cart.util";
 import { CartValidation } from "../validations/schema/cart.validation";
 import validation from "../validations/validation";

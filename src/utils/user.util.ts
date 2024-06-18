@@ -1,6 +1,6 @@
 import pool from "../apps/postgresql.app";
 import ErrorResponse from "../error/response.error";
-import { User, UserLoginWithGoogle, UserRegister } from "../interfaces/user";
+import { User, UserLoginWithGoogle, UserRegister } from "../interfaces/user.interface";
 import { UserHelper } from "../helpers/user.helper";
 import { SqlHelper } from "../helpers/sql.helper";
 import { ErrorHelper } from "../helpers/error.helper";

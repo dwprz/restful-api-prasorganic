@@ -4,7 +4,7 @@ import {
   ProductQuery,
   ProductUpdate,
   ProductImageUpdate,
-} from "../interfaces/product";
+} from "../interfaces/product.interface";
 import { ProductValidation } from "../validations/schema/product.validation";
 import validation from "../validations/validation";
 import { ProductUtil } from "../utils/product.util";
@@ -12,6 +12,8 @@ import { PagingHelper } from "../helpers/paging.helper";
 import { FileHelper } from "../helpers/file.helper";
 import { CategoryUtil } from "../utils/category.util";
 import ErrorResponse from "../error/response.error";
+import { OrderUtil } from "../utils/order.util";
+import { ProductOrderUtil } from "../utils/product-order.util";
 
 export class ProductService {
   static async create(data: ProductInput) {
@@ -224,6 +226,18 @@ export class ProductService {
     const product = await ProductUtil.findWithCategoriesById(product_id);
 
     return product;
+  }
+
+  static async rollbackStocks(order_id: string) {
+    const order_cache = await OrderUtil.findCacheById(order_id);
+
+    let products_order = order_cache?.products;
+
+    if (!order_cache) {
+      products_order = await ProductOrderUtil.findManyById(order_id);
+    }
+
+    await ProductUtil.rollbackStocks(products_order!);
   }
 
   static async delete(product_id: number) {
