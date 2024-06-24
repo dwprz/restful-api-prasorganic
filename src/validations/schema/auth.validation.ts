@@ -1,7 +1,7 @@
 import z, { ZodType } from "zod";
 
 export class AuthValidation {
-  private static pattern = /^[^<>/()#=|&!?:;]*$/;
+  private static pattern = /^[^<>/()#=|&!?:;${}]*$/;
 
   static email: ZodType = z.string().min(5).max(100).regex(this.pattern);
 

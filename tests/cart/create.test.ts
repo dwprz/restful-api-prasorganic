@@ -5,6 +5,7 @@ import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/cart/create.test.ts
 
@@ -36,6 +37,7 @@ describe("POST /api/carts/items", () => {
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("create cart should be successful", async () => {

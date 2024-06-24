@@ -5,12 +5,16 @@ export class AddressTestUtil {
   private static address = {
     address_owner: "NAME TEST",
     street: "STREET TEST",
-    subdistrict_id: "1",
-    subdistrict: "SUBDISTRICT TEST",
-    city_id: "1",
-    city: "CITY TEST",
-    province_id: "1",
-    province: "PROVINCE TEST",
+    area_id: 14223,
+    area: "Ngagel",
+    lat: "-6.4912716",
+    lng: "111.0370989",
+    suburb_id: 1415,
+    suburb: "Dukuhseti",
+    city_id: 85,
+    city: "Pati",
+    province_id: 10,
+    province: "Jawa Tengah",
     whatsapp: "08123456789",
     is_main_address: true,
   };
@@ -55,15 +59,8 @@ export class AddressTestUtil {
     for (let index = 0; index < 5; index++) {
       const address = {
         user_id: user_id,
-        address_owner: this.address.address_owner,
-        street: this.address.street + ` ${index + 1}`,
-        subdistrict_id: (index + 1).toString(),
-        subdistrict: this.address.subdistrict + ` ${index + 1}`,
-        city_id: (index + 1).toString(),
-        city: this.address.city + ` ${index + 1}`,
-        province_id: (index + 1).toString(),
-        province: this.address.province + ` ${index + 1}`,
-        whatsapp: this.address.whatsapp + ` ${index + 1}`,
+        ...this.address,
+        address_owner: "NAME TEST" + ` ${index}`,
         is_main_address: false,
       };
 

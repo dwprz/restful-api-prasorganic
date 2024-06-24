@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { FileHelper } from "../helpers/file.helper";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 function formatImageUrlMiddleware(
   req: Request,

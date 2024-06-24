@@ -5,6 +5,7 @@ import { ProductTestUtil } from "../product/product-test.util";
 import { CartTestUtil } from "./cart-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/cart/get-by-product-name.test.ts
 
@@ -45,6 +46,7 @@ describe("GET /api/carts/products/:productName", () => {
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("get carts by product name should be successful", async () => {

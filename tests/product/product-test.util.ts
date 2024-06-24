@@ -8,6 +8,10 @@ export class ProductTestUtil {
     image: "IMAGE TEST",
     price: 20000,
     stock: 250,
+    length: 30,
+    width: 15,
+    height: 15,
+    weight: 5,
     description: "DESCRIPTION TEST",
   };
 
@@ -91,11 +95,8 @@ export class ProductTestUtil {
 
     for (let index = 0; index < 20; index++) {
       const product = {
+        ...this.product,
         product_name: `${this.product.product_name} ${index + 1}`,
-        image: `${this.product.image} ${index + 1}`,
-        price: `${this.product.price}`,
-        stock: `${this.product.stock}`,
-        description: `${this.product.description} ${index + 1}`,
       };
 
       products_request.push(product);
@@ -184,11 +185,8 @@ export class ProductTestUtil {
 
     for (let index = 0; index < 8; index++) {
       const product = {
+        ...this.product,
         product_name: `${this.product.product_name} ${index + 1}`,
-        image: `${this.product.image} ${index + 1}`,
-        price: `${this.product.price}`,
-        stock: `${this.product.stock}`,
-        description: `${this.product.description} ${index + 1}`,
         is_top_product: true,
       };
 
@@ -288,11 +286,8 @@ export class ProductTestUtil {
 
     for (let index = 0; index < 20; index++) {
       const product = {
+        ...this.product,
         product_name: `${this.product.product_name} ${index + 1}`,
-        image: `${this.product.image} ${index + 1}`,
-        price: `${this.product.price}`,
-        stock: `${this.product.stock}`,
-        description: `${this.product.description} ${index + 1}`,
       };
 
       products_request.push(product);

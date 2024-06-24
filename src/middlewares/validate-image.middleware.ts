@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { NextFunction, Request, Response } from "express";
 import { FileHelper } from "../helpers/file.helper";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 const validateImageMiddleware = async (
   req: Request,

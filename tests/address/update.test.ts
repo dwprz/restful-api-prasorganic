@@ -4,6 +4,7 @@ import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/address/update.test.ts
 
@@ -31,6 +32,7 @@ describe("PUT /api/addresses/:addressId", () => {
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("update address should be successful", async () => {
@@ -50,12 +52,16 @@ describe("PUT /api/addresses/:addressId", () => {
         address_id: address_id,
         address_owner: "NEW NAME TEST",
         street: "STREET TEST",
-        subdistrict_id: "1",
-        subdistrict: "SUBDISTRICT TEST",
-        city_id: "1",
-        city: "CITY TEST",
-        province_id: "1",
-        province: "NEW PROVINCE TEST",
+        area_id: 14223,
+        area: "Ngagel",
+        lat: "-6.4912716",
+        lng: "111.0370989",
+        suburb_id: 1415,
+        suburb: "Dukuhseti",
+        city_id: 85,
+        city: "Pati",
+        province_id: 10,
+        province: "Jawa Tengah",
         whatsapp: "08123456789",
         is_main_address: true,
       })
@@ -83,12 +89,16 @@ describe("PUT /api/addresses/:addressId", () => {
         address_id: address_id,
         address_owner: "NEW NAME TEST",
         street: "STREET TEST",
-        subdistrict_id: "1",
-        subdistrict: "SUBDISTRICT TEST",
-        city_id: "1",
-        city: "CITY TEST",
-        province_id: "1",
-        province: "NEW PROVINCE TEST",
+        area_id: 14223,
+        area: "Ngagel",
+        lat: "-6.4912716",
+        lng: "111.0370989",
+        suburb_id: 1415,
+        suburb: "Dukuhseti",
+        city_id: 85,
+        city: "Pati",
+        province_id: 10,
+        province: "Jawa Tengah",
         whatsapp: "08123456789",
         is_main_address: true,
       })

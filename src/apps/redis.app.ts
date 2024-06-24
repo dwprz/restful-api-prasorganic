@@ -1,6 +1,7 @@
 import { Redis } from "ioredis";
 import { EnvHelper } from "../helpers/env.helper";
 import "dotenv/config";
+import { ConsoleHelper } from "../helpers/console.helper";
 
 const REDIS_HOST = process.env.REDIS_HOST;
 const REDIS_PORT = process.env.REDIS_PORT;
@@ -17,7 +18,7 @@ const redis: Redis = new Redis({
 });
 
 redis.on("error", (error) => {
-  console.log("redis error: ", error.message);
+  ConsoleHelper.error("redis", error);
 });
 
 export default redis;

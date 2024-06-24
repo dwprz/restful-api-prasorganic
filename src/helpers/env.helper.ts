@@ -1,4 +1,4 @@
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 export class EnvHelper {
   static validate(environments: Record<string, string | undefined>) {

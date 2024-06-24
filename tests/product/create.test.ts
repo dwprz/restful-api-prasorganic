@@ -5,6 +5,7 @@ import "dotenv/config";
 import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/product/create.test.ts
 
@@ -40,6 +41,7 @@ describe("POST /api/products", () => {
     await UserTestUtil.deleteAdmin();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("create product should be successful", async () => {
@@ -58,6 +60,10 @@ describe("POST /api/products", () => {
       .field("product_name", "PRODUCT TEST")
       .field("price", 10000)
       .field("stock", 250)
+      .field("length", 30)
+      .field("width", 15)
+      .field("height", 15)
+      .field("weight", 5)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
       .field("categories", "kurma")
@@ -88,6 +94,10 @@ describe("POST /api/products", () => {
       .field("product_name", "PRODUCT TEST")
       .field("price", 10000)
       .field("stock", 250)
+      .field("length", 30)
+      .field("width", 15)
+      .field("height", 15)
+      .field("weight", 5)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
       .attach("image", __dirname + "/assets/product-image.jpg")
@@ -116,6 +126,10 @@ describe("POST /api/products", () => {
       .field("product_name", "PRODUCT TEST")
       .field("price", 10000)
       .field("stock", 250)
+      .field("length", 30)
+      .field("width", 15)
+      .field("height", 15)
+      .field("weight", 5)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
       .attach("image", __dirname + "/assets/invalid-file.jpg")
@@ -144,6 +158,10 @@ describe("POST /api/products", () => {
       .field("product_name", "PRODUCT TEST")
       .field("price", 10000)
       .field("stock", 250)
+      .field("length", 30)
+      .field("width", 15)
+      .field("height", 15)
+      .field("weight", 5)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
       .attach("image", __dirname + "/assets/image-size-more-than-1mb.jpg")
@@ -172,6 +190,10 @@ describe("POST /api/products", () => {
       .field("product_name", "PRODUCT TEST")
       .field("price", 10000)
       .field("stock", 250)
+      .field("length", 30)
+      .field("width", 15)
+      .field("height", 15)
+      .field("weight", 5)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
       .field("categories", "kurma")
@@ -202,6 +224,10 @@ describe("POST /api/products", () => {
       .field("product_name", "PRODUCT TEST")
       .field("price", 10000)
       .field("stock", 250)
+      .field("length", 30)
+      .field("width", 15)
+      .field("height", 15)
+      .field("weight", 5)
       .field("description", "DESCRIPTION TEST")
       .field("categories", "grains")
       .field("categories", "kurma")

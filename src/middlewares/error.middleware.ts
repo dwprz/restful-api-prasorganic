@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import ResponseError from "../error/response.error";
+import ResponseError from "../errors/response.error";
 import { ZodError } from "zod";
-import QueryError from "../error/query.error";
+import QueryError from "../errors/query.error";
+import { HttpError } from "../errors/http.error";
+import { ConsoleHelper } from "../helpers/console.helper";
 
 function errorMiddleware(
   err: Error,
@@ -10,9 +12,9 @@ function errorMiddleware(
   next: NextFunction
 ) {
   // error loging
-  err instanceof QueryError
-    ? console.log(`this log error: {${err.name}: ${err.message}}`)
-    : console.log(`this log error: ${err.message}`);
+  err instanceof QueryError || err instanceof HttpError
+    ? ConsoleHelper.error(err.name, err)
+    : ConsoleHelper.error(undefined, err);
 
   // error handling
   if (err instanceof ResponseError) {
@@ -21,6 +23,10 @@ function errorMiddleware(
 
   if (err instanceof ZodError) {
     return res.status(400).json({ error: err.format() });
+  }
+
+  if (err instanceof HttpError) {
+    return res.status(err.status).json({ error: `failed to ${err.name}` });
   }
 
   return res

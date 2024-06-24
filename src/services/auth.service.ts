@@ -1,4 +1,4 @@
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { AuthHelper } from "../helpers/auth.helper";
 import { EnvHelper } from "../helpers/env.helper";
 import { TemplateHelper } from "../helpers/template.helper";

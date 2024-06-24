@@ -1,10 +1,11 @@
 import { Product, ProductInput } from "../interfaces/product.interface";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { SqlHelper } from "../helpers/sql.helper";
 import pool from "../apps/postgresql.app";
 import { ProductHelper } from "../helpers/product.helper";
 import { ErrorHelper } from "../helpers/error.helper";
 import { ProductOrder } from "../interfaces/order.interface";
+import { query } from "express";
 
 export class ProductUtil {
   static async createWithCategories(data: ProductInput) {
@@ -550,6 +551,14 @@ export class ProductUtil {
     const client = await pool.connect();
 
     try {
+      await client.query("BEGIN TRANSACTION;");
+
+      if (fields.stock || fields.rate) {
+        const query = `SELECT stock, rate FROM products WHERE product_id = $1 FOR UPDATE;`;
+
+        await client.query(query, [product_id]);
+      }
+
       const set_clause = SqlHelper.buildSetClause(fields);
       const field_values = SqlHelper.getFieldValues(fields);
 
@@ -566,8 +575,12 @@ export class ProductUtil {
       const result = await client.query(query, [...field_values, product_id]);
       const product = result.rows[0];
 
+      await client.query("COMMIT TRANSACTION;");
+
       return product;
     } catch (error: any) {
+      await client.query("ROLLBACK TRANSACTION;");
+
       if (error.code === "23505") {
         throw new ErrorResponse(409, "product name already exists");
       }
@@ -581,23 +594,23 @@ export class ProductUtil {
   static async rollbackStocks(products_order: ProductOrder[]) {
     const client = await pool.connect();
     try {
+      await client.query("BEGIN TRANSACTION;");
+
+      const locking_query = `SELECT stock FROM products WHERE product_id = $1 FOR UPDATE;`;
+      const update_query = `UPDATE products SET stock = stock + $1 WHERE product_id = $2;`;
+
       for (const { quantity, product_id } of products_order) {
-        const query = `
-        UPDATE 
-            products
-        SET
-            stock = stock + $1
-        WHERE
-            product_id = $2
-        RETURNING *;
-        `;
+        await client.query(locking_query, [product_id]);
 
-        const result = await client.query(query, [quantity, product_id]);
-
-        console.log(result.rows);
+        await client.query(update_query, [quantity, product_id]);
       }
+
+      await client.query("COMMIT TRANSACTION;");
     } catch (error) {
+      await client.query("ROLLBACK TRANSACTION;");
       throw ErrorHelper.catch("rollback stocks by ids", error);
+    } finally {
+      client.release();
     }
   }
 

@@ -3,6 +3,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/user/get-by-full-name.test.ts
 
@@ -24,6 +25,7 @@ describe("GET /api/users/full-name/:fullName", () => {
     await UserTestUtil.deleteAdmin();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("get users by full name should be successful", async () => {

@@ -3,6 +3,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/auth/refresh-token.test.ts
 
@@ -21,6 +22,7 @@ describe("POST /api/users/current/refresh-token", () => {
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("refresh token should be successful", async () => {

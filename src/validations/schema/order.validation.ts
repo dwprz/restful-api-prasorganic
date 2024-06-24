@@ -1,23 +1,44 @@
 import z, { ZodType } from "zod";
 
 export class OrderValidation {
+  private static pattern = /^[^<>#=|&!?:;${}]*$/;
+
+  static order_id: ZodType = z.string().max(100).regex(this.pattern);
+
   static create: ZodType = z.object({
     order: z.object({
-      order_id: z.string(),
+      order_id: z.string().max(100).regex(this.pattern),
       gross_amount: z.number(),
-      courier: z.string(),
+      
+      courier: z.string().max(50).regex(this.pattern),
+      rate_id: z.number().int(),
+      rate_name: z.string().max(50).regex(this.pattern),
+      rate_type: z.string().max(50).regex(this.pattern),
+      cod: z.boolean().default(false),
+      use_insurance: z.boolean().default(false),
+      package_type: z.number().int().max(3),
+
       snap_token: z.string(),
       snap_redirect_url: z.string(),
 
       user_id: z.number(),
-      buyer: z.string(),
-      email: z.string().optional(),
+      buyer: z.string().max(100).regex(this.pattern),
+      email: z.string().max(100).regex(this.pattern),
 
-      address_owner: z.string(),
+      length: z.number().int(),
+      width: z.number().int(),
+      height: z.number().int(),
+      weight: z.number(),
+
+      address_owner: z.string().max(100).regex(this.pattern),
       street: z.string(),
-      subdistrict: z.string(),
-      city: z.string(),
-      province: z.string(),
+      area_id: z.number().int(),
+      area: z.string().max(100).regex(this.pattern),
+      lat: z.string().max(100).regex(this.pattern),
+      lng: z.string().max(100).regex(this.pattern),
+      suburb: z.string().max(100).regex(this.pattern),
+      city: z.string().max(100).regex(this.pattern),
+      province: z.string().max(100).regex(this.pattern),
       whatsapp: z.string(),
     }).strict(),
 
@@ -32,4 +53,9 @@ export class OrderValidation {
       }).strict()
     ),
   });
+
+  static addShippingId: ZodType = z.object({
+    order_id: z.string().max(100).regex(this.pattern),
+    shipping_id: z.string().max(100).regex(this.pattern),
+  }).strict()
 }

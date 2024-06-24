@@ -7,8 +7,8 @@ import userRouter from "../routers/user.router";
 import productRouter from "../routers/product.router";
 import addressRouter from "../routers/addess.router";
 import cartRouter from "../routers/cart.router";
-import rajaOngkirRouter from "../routers/raja-ongkir.router";
-import orderRouter from "../routers/order.router";
+import transactionRouter from "../routers/transaction.router";
+import shippingRouter from "../routers/shipping.router";
 
 const corsOpt = {
   credentials: true,
@@ -27,8 +27,8 @@ app.use(userRouter);
 app.use(productRouter);
 app.use(cartRouter);
 app.use(addressRouter);
-app.use(orderRouter);
-app.use(rajaOngkirRouter);
+app.use(transactionRouter);
+app.use(shippingRouter);
 app.use(errorMiddleware);
 
 export default app;

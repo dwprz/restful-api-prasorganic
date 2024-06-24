@@ -26,6 +26,10 @@ export interface CartDetails {
     sold: number | null;
     price: number;
     stock: number;
+    length: number;
+    width: number;
+    height: number;
+    weight: number;
     description: string | null;
     created_at: Date;
     updated_at: Date | null;
@@ -58,6 +62,10 @@ export interface CartOutput {
   total_gross_price: number;
   quantity: number;
   stock: number;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
   description: string | null;
   is_top_product: boolean;
 }

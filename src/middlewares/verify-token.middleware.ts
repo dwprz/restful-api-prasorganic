@@ -3,7 +3,7 @@ import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import "dotenv/config";
 import { JwtPayload, UserRequest } from "../interfaces/user.interface";
 import { EnvHelper } from "../helpers/env.helper";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 function verifyTokenMiddleware(
   req: Request,

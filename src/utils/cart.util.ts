@@ -1,5 +1,4 @@
 import pool from "../apps/postgresql.app";
-import ErrorResponse from "../error/response.error";
 import { CartHelper } from "../helpers/cart.helper";
 import { ErrorHelper } from "../helpers/error.helper";
 import { SqlHelper } from "../helpers/sql.helper";
@@ -32,8 +31,8 @@ export class CartUtil {
 
       query = `
       SELECT 
-          product_name, image, rate, sold, price, stock, description, 
-          created_at, updated_at
+          product_name, image, rate, sold, price, stock, length, width, height, weight,
+          description, created_at, updated_at
       FROM
           products 
       WHERE
@@ -63,8 +62,8 @@ export class CartUtil {
         LIMIT ${limit} OFFSET ${offset}
       )
       SELECT 
-          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.description,
-          p.created_at, p.updated_at, u.email, u.photo_profile, u.role 
+          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.length, p.width, p.height, 
+          p.weight, p.description, p.created_at, p.updated_at, u.email, u.photo_profile, u.role 
       FROM 
           products AS p
       INNER JOIN
@@ -92,8 +91,8 @@ export class CartUtil {
     try {
       let query = `
       SELECT 
-          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.description, 
-          p.created_at, p.updated_at
+          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.length, p.width, p.height,
+          p.weight, p.description, p.created_at, p.updated_at
       FROM 
           products AS p 
       INNER JOIN 
@@ -135,8 +134,8 @@ export class CartUtil {
         LIMIT ${limit} OFFSET ${offset}
       )
       SELECT 
-          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.description,
-          p.created_at, p.updated_at, u.email, u.photo_profile, u.role 
+          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.length, p.width, p.height,
+          p.weight, p.description, p.created_at, p.updated_at, u.email, u.photo_profile, u.role 
       FROM 
           products AS p
       INNER JOIN

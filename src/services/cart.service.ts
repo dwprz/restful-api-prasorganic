@@ -1,4 +1,4 @@
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { PagingHelper } from "../helpers/paging.helper";
 import { CartByProductName, CartDelete, CartInput } from "../interfaces/cart.interface";
 import { CartUtil } from "../utils/cart.util";

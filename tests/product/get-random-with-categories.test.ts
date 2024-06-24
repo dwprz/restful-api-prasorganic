@@ -5,6 +5,7 @@ import { ProductTestUtil } from "./product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import { UserTestUtil } from "../user/user-test.util";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/product/get-random-with-categories.test.ts
 
@@ -38,6 +39,7 @@ describe("GET /api/products-with-categories", () => {
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("get random products with categories should be successful", async () => {

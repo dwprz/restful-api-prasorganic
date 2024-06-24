@@ -4,6 +4,7 @@ import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/address/get-by-user-id.test.ts
 
@@ -28,6 +29,7 @@ describe("POST /api/addresses/user/:userId", () => {
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("get addresses by user id should be successful", async () => {

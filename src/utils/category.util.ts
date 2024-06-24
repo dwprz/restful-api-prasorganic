@@ -1,5 +1,5 @@
 import pool from "../apps/postgresql.app";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { ErrorHelper } from "../helpers/error.helper";
 import { SqlHelper } from "../helpers/sql.helper";
 

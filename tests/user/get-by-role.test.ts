@@ -3,6 +3,7 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/user/get-by-role.test.ts
 
@@ -22,6 +23,7 @@ describe("GET /api/users", () => {
     await UserTestUtil.deleteAdmin();
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("get users by role should be successful", async () => {

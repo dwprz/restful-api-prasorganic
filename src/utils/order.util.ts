@@ -1,9 +1,9 @@
 import pool from "../apps/postgresql.app";
-import redis from "../apps/redis.app";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { ErrorHelper } from "../helpers/error.helper";
 import { SqlHelper } from "../helpers/sql.helper";
 import { Order, OrderWithProducts } from "../interfaces/order.interface";
+import { OrderCache } from "../cache/order.cache";
 
 export class OrderUtil {
   static async create(data: OrderWithProducts) {
@@ -42,11 +42,11 @@ export class OrderUtil {
         INSERT INTO
             products_orders (${field_names}, order_id)
         VALUES
-            (${parameterized_queries}, '${order_id}')
+            (${parameterized_queries}, $${field_values.length + 1})
         RETURNING *;
         `;
 
-        let result = await client.query(query, field_values);
+        let result = await client.query(query, [...field_values, order_id]);
         const product_order = result.rows[0];
 
         products.push(product_order);
@@ -69,18 +69,23 @@ export class OrderUtil {
         }
 
         query = `
-        UPDATE products SET stock = $1
-        WHERE product_id = $2 RETURNING *;
+        UPDATE 
+            products 
+        SET 
+            stock = $1
+        WHERE 
+            product_id = $2 
+        RETURNING *;
         `;
 
         await client.query(query, [stock, product.product_id]);
       }
 
-      await this.createCache({ order, products });
+      await OrderCache.cache({ order, products });
 
       await client.query("COMMIT TRANSACTION;");
 
-      return { order, products };
+      return { order, products } as OrderWithProducts;
     } catch (error) {
       await client.query("ROLLBACK TRANSACTION;");
       throw ErrorHelper.catch("create order", error);
@@ -89,31 +94,39 @@ export class OrderUtil {
     }
   }
 
-  static async createCache(data: OrderWithProducts) {
+  static async findById(order_id: string) {
+    const client = await pool.connect();
     try {
-      const order_id = data.order.order_id;
+      let query = `
+      WITH cte_order AS (
+        SELECT * FROM orders WHERE order_id = $1
+      ),
+      cte_products_order AS (
+        SELECT * FROM products_orders WHERE order_id = $1
+      )
+      SELECT
+        (SELECT json_agg(row_to_json(cte_order.*)) FROM cte_order) AS order,
+        (SELECT json_agg(row_to_json(cte_products_order)) FROM cte_products_order) AS products;
+      `;
 
-      await redis.setex(
-        `order_id:${order_id}`,
-        3600 * 24 * 7,
-        JSON.stringify(data)
-      );
-    } catch (error) {
-      throw ErrorHelper.catch("create order cache", error);
-    }
-  }
+      const result = await client.query(query, [order_id]);
 
-  static async findCacheById(order_id: string) {
-    try {
-      const order = await redis.get(`order_id:${order_id}`);
-
-      if (!order) {
-        return null;
+      if (!result.rows[0].order || !result.rows[0].products) {
+        throw new ErrorResponse(404, "order or products not found");
       }
 
-      return JSON.parse(order) as OrderWithProducts;
+      const order_with_products: OrderWithProducts = {
+        order: result.rows[0].order[0],
+        products: result.rows[0].products,
+      };
+
+      await OrderCache.cache(order_with_products);
+
+      return order_with_products;
     } catch (error) {
-      throw ErrorHelper.catch("finda order cache by id", error);
+      throw ErrorHelper.catch("find order by id", error);
+    } finally {
+      client.release();
     }
   }
 
@@ -138,7 +151,7 @@ export class OrderUtil {
       const result = await client.query(query, [...field_values, order_id]);
       const order = result.rows[0] as Order;
 
-      await this.updateCacheById(fields, order_id);
+      await OrderCache.updateById(fields, order_id);
 
       await client.query("COMMIT TRANSACTION;");
 
@@ -148,22 +161,6 @@ export class OrderUtil {
       throw ErrorHelper.catch("update order by id", error);
     } finally {
       client.release();
-    }
-  }
-
-  static async updateCacheById(fields: Record<string, any>, order_id: string) {
-    try {
-      const order_cache = await this.findCacheById(order_id);
-
-      if (order_cache) {
-        Object.keys(fields).forEach((property) => {
-          (order_cache.order as any)[property] = fields[property];
-        });
-
-        await this.createCache(order_cache);
-      }
-    } catch (error) {
-      throw ErrorHelper.catch("update order cache by id", error);
     }
   }
 }

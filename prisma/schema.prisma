@@ -26,6 +26,7 @@ model User {
   updated_at    DateTime? @updatedAt
   cart          Cart[]
   addresses     Address[]
+  orders        Order[]
 
   @@map("users")
 }
@@ -44,13 +45,19 @@ model Otp {
 }
 
 model Product {
-  product_id     Int                 @id @default(autoincrement())
-  product_name   String              @unique @db.VarChar(100)
-  image          String              @db.VarChar(300)
-  rate           Int?                @db.Integer
-  sold           Int?                @db.Integer
-  price          Int                 @db.Integer
-  stock          Int                 @db.Integer
+  product_id   Int    @id @default(autoincrement())
+  product_name String @unique @db.VarChar(100)
+  image        String @db.VarChar(300)
+  rate         Int?   @db.Integer
+  sold         Int?   @db.Integer
+  price        Int    @db.Integer
+  stock        Int    @db.Integer
+
+  length Int   @db.Integer
+  width  Int   @db.Integer
+  height Int   @db.Integer
+  weight Float @db.Real
+
   description    String?             @db.Text
   is_top_product Boolean             @default(false) @db.Boolean
   created_at     DateTime            @default(now())
@@ -62,13 +69,19 @@ model Product {
 }
 
 model DeletedProduct {
-  product_id     Int                        @id @unique
-  product_name   String                     @unique @db.VarChar(100)
-  image          String                     @db.VarChar(300)
-  rate           Int?                       @db.Integer
-  sold           Int?                       @db.Integer
-  price          Int                        @db.Integer
-  stock          Int                        @db.Integer
+  product_id   Int    @id @unique
+  product_name String @unique @db.VarChar(100)
+  image        String @db.VarChar(300)
+  rate         Int?   @db.Integer
+  sold         Int?   @db.Integer
+  price        Int    @db.Integer
+  stock        Int    @db.Integer
+
+  length Int   @db.Integer
+  width  Int   @db.Integer
+  height Int   @db.Integer
+  weight Float @db.Real
+
   description    String?                    @db.Text
   is_top_product Boolean                    @default(false) @db.Boolean
   created_at     DateTime                   @default(now())
@@ -122,48 +135,89 @@ model Cart {
 }
 
 model Address {
-  address_id      Int       @id @default(autoincrement())
-  user_id         Int
-  address_owner   String    @db.VarChar(100)
-  street          String    @db.VarChar(200)
-  subdistrict_id  String    @db.VarChar(5)
-  subdistrict     String    @db.VarChar(100)
-  city_id         String    @db.VarChar(5)
-  city            String    @db.VarChar(100)
-  province_id     String    @db.VarChar(5)
-  province        String    @db.VarChar(100)
-  whatsapp        String    @db.VarChar(20)
-  is_main_address Boolean   @default(false) @db.Boolean
-  created_at      DateTime  @default(now())
-  updated_at      DateTime? @updatedAt
-  user            User      @relation(fields: [user_id], references: [user_id])
+  address_id    Int    @id @default(autoincrement())
+  user_id       Int
+  address_owner String @db.VarChar(100)
+
+  street  String @db.VarChar(200)
+  area_id Int    @db.Integer
+  area    String @db.VarChar(100)
+  lat     String @db.VarChar(100)
+  lng     String @db.VarChar(100)
+
+  suburb_id Int    @db.Integer
+  suburb    String @db.VarChar(100)
+
+  city_id Int    @db.Integer
+  city    String @db.VarChar(100)
+
+  province_id Int    @db.Integer
+  province    String @db.VarChar(100)
+
+  whatsapp        String  @db.VarChar(20)
+  is_main_address Boolean @default(false) @db.Boolean
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  user       User      @relation(fields: [user_id], references: [user_id])
 
   @@map("addresses")
 }
 
+// order_id: dibuat pada awal transaksi menggunakan Midtrans. 
+// order_id ini sebagai identifikasi unik untuk setiap transaksi yang 
+// terjadi melalui sistem Midtrans.
+
+// shipping_id: merujuk pada properti order_id yang diberikan oleh penyedia 
+// jasa pengiriman Shipper. shipping_id ini dibuat setelah pesanan pengiriman
+// (shipping order) dikonfirmasi ke pihak penyedia jasa pengiriman.
+
+// Karena kolom order_id sudah ada, maka kolom untuk menyimpan ID dari penyedia
+// jasa pengiriman dinamakan shipping_id untuk membedakan antara order_id dari 
+// Midtrans dan ID yang diberikan oleh Shipper.
+
 model Order {
-  order_id          String      @id
-  gross_amount      Int         @db.Integer
-  courier           String      @db.VarChar(50)
-  payment_method    String?     @db.VarChar(50)
-  status            OrderStatus @default(PENDING_PAYMENT)
+  order_id     String      @id
+  gross_amount Int         @db.Integer
+  status       OrderStatus @default(PENDING_PAYMENT)
+
+  shipping_id    String? @db.VarChar(100)
+  courier       String  @db.VarChar(50)
+  rate_id       Int     @db.Integer
+  rate_name     String  @db.VarChar(50)
+  rate_type     String  @db.VarChar(50)
+  cod           Boolean @default(false) @db.Boolean
+  use_insurance Boolean @default(false) @db.Boolean
+  package_type  Int     @db.Integer
+
+  payment_method    String? @db.VarChar(50)
   snap_token        String
   snap_redirect_url String
-  waybill_number    String?     @db.VarChar(100)
 
   user_id Int    @db.Integer
   email   String @db.VarChar(100)
   buyer   String @db.VarChar(100)
 
+  length Int   @db.Integer
+  width  Int   @db.Integer
+  height Int   @db.Integer
+  weight Float @db.Real
+
   address_owner String @db.VarChar(100)
   street        String @db.VarChar(200)
-  subdistrict   String @db.VarChar(100)
+  area_id       Int    @db.Integer
+  area          String @db.VarChar(100)
+  lat           String @db.VarChar(100)
+  lng           String @db.VarChar(100)
+  suburb        String @db.VarChar(100)
   city          String @db.VarChar(100)
   province      String @db.VarChar(100)
   whatsapp      String @db.VarChar(20)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
+
+  user User @relation(fields: [user_id], references: [user_id])
 
   products ProductOrder[]
 
@@ -177,20 +231,20 @@ enum OrderStatus {
   COMPLETED
   CANCELED
   FAILED
-  REFUND_PROCESSED
-  REFUND_COMPLETED
+  RETURN_PROCESS
+  LOST_OR_DAMAGED
 }
 
 model ProductOrder {
-  product_order_history_id Int    @id @default(autoincrement())
-  order_id                 String
-  product_id               Int    @db.Integer
-  product_name             String @db.VarChar(100)
-  image                    String @db.VarChar(300)
-  price                    Int    @db.Integer
-  quantity                 Int    @db.Integer
-  total_gross_price        Int    @db.Integer
-  order                    Order  @relation(fields: [order_id], references: [order_id])
+  product_order_id  Int    @id @default(autoincrement())
+  order_id          String
+  product_id        Int    @db.Integer
+  product_name      String @db.VarChar(100)
+  image             String @db.VarChar(300)
+  price             Int    @db.Integer
+  quantity          Int    @db.Integer
+  total_gross_price Int    @db.Integer
+  order             Order  @relation(fields: [order_id], references: [order_id])
 
   @@map("products_orders")
 }

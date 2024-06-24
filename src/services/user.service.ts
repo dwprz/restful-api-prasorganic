@@ -1,4 +1,4 @@
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { AuthHelper } from "../helpers/auth.helper";
 import { FileHelper } from "../helpers/file.helper";
 import { PagingHelper } from "../helpers/paging.helper";

@@ -1,4 +1,4 @@
-import ResponseError from "../error/response.error";
+import ResponseError from "../errors/response.error";
 import {
   ProductInput,
   ProductQuery,
@@ -11,9 +11,9 @@ import { ProductUtil } from "../utils/product.util";
 import { PagingHelper } from "../helpers/paging.helper";
 import { FileHelper } from "../helpers/file.helper";
 import { CategoryUtil } from "../utils/category.util";
-import ErrorResponse from "../error/response.error";
-import { OrderUtil } from "../utils/order.util";
+import ErrorResponse from "../errors/response.error";
 import { ProductOrderUtil } from "../utils/product-order.util";
+import { OrderCache } from "../cache/order.cache";
 
 export class ProductService {
   static async create(data: ProductInput) {
@@ -229,7 +229,7 @@ export class ProductService {
   }
 
   static async rollbackStocks(order_id: string) {
-    const order_cache = await OrderUtil.findCacheById(order_id);
+    const order_cache = await OrderCache.findById(order_id);
 
     let products_order = order_cache?.products;
 

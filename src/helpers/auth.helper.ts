@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import "dotenv/config";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 export class AuthHelper {
   static generateOtp() {

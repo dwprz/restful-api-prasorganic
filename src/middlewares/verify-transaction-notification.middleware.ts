@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import crypto from "crypto";
 import { EnvHelper } from "../helpers/env.helper";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import "dotenv/config";
 
 function verifyTransactionNotificationMiddleware(

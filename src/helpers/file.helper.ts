@@ -1,5 +1,5 @@
 import fs from "fs";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import fileType from "file-type";
 import "dotenv/config";
 import { EnvHelper } from "./env.helper";

@@ -1,7 +1,7 @@
 import z, { ZodType } from "zod";
 
 export class CartValidation {
-  private static pattern = /^[^<>/()#=|&!?:;]*$/;
+  private static pattern = /^[^<>/()#=|&!?:;${}]*$/;
 
   static user_id: ZodType = z.number().min(1).int();
 

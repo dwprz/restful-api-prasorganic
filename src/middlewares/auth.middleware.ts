@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 import { EnvHelper } from "../helpers/env.helper";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
   try {

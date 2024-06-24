@@ -6,6 +6,10 @@ export interface Product {
   sold: number | null;
   price: number;
   stock: number;
+  height: number;
+  length: number;
+  width: number;
+  weight: number;
   description: string | null;
   is_top_product: boolean;
   created_at: Date;
@@ -18,6 +22,10 @@ export interface ProductInput {
   image: string;
   price: number;
   stock: number;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
   description?: string;
   categories: string | string[];
 }
@@ -35,6 +43,10 @@ export interface ProductUpdate {
   sold?: number | null;
   price?: number;
   stock?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  weight?: number;
   description?: string | null;
   is_top_product?: boolean;
 }

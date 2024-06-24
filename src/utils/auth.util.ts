@@ -1,5 +1,5 @@
 import pool from "../apps/postgresql.app";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 import { ErrorHelper } from "../helpers/error.helper";
 import { OTP } from "../interfaces/otp.interface";
 

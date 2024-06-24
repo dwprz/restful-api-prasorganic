@@ -1,6 +1,7 @@
 import pg from "pg";
 import "dotenv/config";
 import { EnvHelper } from "../helpers/env.helper";
+import { ConsoleHelper } from "../helpers/console.helper";
 
 const { Pool } = pg;
 
@@ -24,7 +25,7 @@ const pool = new Pool({
 });
 
 pool.on("error", (error) => {
-  console.log("postgres error: ", error.message);
+  ConsoleHelper.error("postgresql", error);
 });
 
 export default pool;

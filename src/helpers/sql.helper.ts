@@ -1,5 +1,5 @@
 import { string } from "zod";
-import ErrorResponse from "../error/response.error";
+import ErrorResponse from "../errors/response.error";
 
 export class SqlHelper {
   // method untuk mendapatkan nama field nya

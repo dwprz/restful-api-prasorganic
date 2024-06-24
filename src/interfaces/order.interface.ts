@@ -1,19 +1,37 @@
 export interface Order {
-  order_id?: number;
+  order_id?: string | null;
   gross_amount: number;
-  courier: string;
-  payment_method?: string | null;
   status: OrderStatus;
+
+  shipping_id?: string | null;
+  courier: string;
+  rate_id: number;
+  rate_name: string;
+  rate_type: string;
+  cod: boolean;
+  use_insurance: boolean;
+  package_type: number;
+
+  payment_method?: string | null;
   snap_token?: string;
   snap_redirect_url?: string;
-  waybill_number?: string;
 
   user_id: number;
   email: string;
   buyer: string;
 
+  height: number;
+  length: number;
+  width: number;
+  weight: number;
+
   address_owner: string;
   street: string;
+  area_id: number;
+  area: string;
+  lat: string;
+  lng: string;
+  suburb: string;
   city: string;
   province: string;
   whatsapp: string;
@@ -28,19 +46,19 @@ export interface OrderWithProducts {
 }
 
 export enum OrderStatus {
-  PENDING_PAYMENT,
-  PAID,
-  ON_PROGRESS,
-  COMPLETED,
-  CANCELED,
-  FAILED,
-  REFUND_PROCESSED,
-  REFUND_COMPLETED,
+  PENDING_PAYMENT = "PENDING_PAYMENT",
+  PAID = "PAID",
+  ON_PROGRESS = "ON_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELED = "CANCELED",
+  FAILED = "FAILED",
+  RETURN_PROCESS = "RETURN_PROCESS",
+  LOST_OR_DAMAGED = "LOST_OR_DAMAGED",
 }
 
 export interface ProductOrder {
   product_order_id?: number;
-  order_id?: number;
+  order_id?: string;
   product_id: number;
   product_name: string;
   image: string;

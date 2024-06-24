@@ -4,6 +4,7 @@ import { ProductTestUtil } from "./product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import "dotenv/config";
 import redis from "../../src/apps/redis.app";
+import orderShippingQueue from "../../src/queue/shipping.queue";
 
 // npx jest tests/product/get-by-name.test.ts
 
@@ -22,6 +23,7 @@ describe("GET /api/products", () => {
     await ProductTestUtil.deleteManyWithCategories(products_ids);
     await pool.end();
     await redis.quit();
+    await orderShippingQueue.close();
   });
 
   it("get products by name should be successful", async () => {
