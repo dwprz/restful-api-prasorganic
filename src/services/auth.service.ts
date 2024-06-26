@@ -10,8 +10,10 @@ import {
   UserLoginWithGoogle,
   UserRegister,
 } from "../interfaces/user.interface";
-import { AuthUtil } from "../utils/auth.util";
-import { UserUtil } from "../utils/user.util";
+import { OtpModelModify } from "../models/otp/modify.model";
+import { OtpModelRetrieve } from "../models/otp/retrieve.model";
+import { UserModelModify } from "../models/user/modify.model";
+import { UserModelRetrieve } from "../models/user/retrieve.model";
 import { AuthValidation } from "../validations/schema/auth.validation";
 import validation from "../validations/validation";
 import bcrypt from "bcrypt";
@@ -35,16 +37,16 @@ export class AuthService {
 
     await TransporterHelper.sendMail(GMAIL_MASTER!, email, subject, template);
 
-    await AuthUtil.upsertOtpByEmail(email, otp);
+    await OtpModelModify.upsertByEmail(email, otp);
   }
 
   static async verifyOtp(data: OTP) {
     data = validation(AuthValidation.otp, data);
 
-    const existing_otp = await AuthUtil.getOtpByEmail(data.email);
+    const existing_otp = await OtpModelRetrieve.findByEmail(data.email);
     AuthHelper.verifyOtp(data.otp, existing_otp!.otp);
 
-    await AuthUtil.deleteOtpByEmail(data.email);
+    await OtpModelModify.deleteByEmail(data.email);
   }
 
   static async register(data: UserRegister) {
@@ -52,7 +54,7 @@ export class AuthService {
 
     const encrypt_password = await bcrypt.hash(data.password, 10);
 
-    const user = await UserUtil.create({
+    const user = await UserModelModify.create({
       ...data,
       password: encrypt_password,
     });
@@ -63,7 +65,9 @@ export class AuthService {
   static async login(data: UserLogin) {
     data = validation(AuthValidation.authenticate, data);
 
-    const existing_user = await UserUtil.findByFields({ email: data.email });
+    const existing_user = await UserModelRetrieve.findByFields({
+      email: data.email,
+    });
 
     if (!existing_user) {
       throw new ErrorResponse(404, "user not found");
@@ -74,7 +78,7 @@ export class AuthService {
     const new_access_token = AuthHelper.createAccessToken(existing_user);
     const new_refresh_token = AuthHelper.createRefreshToken();
 
-    const user = await UserUtil.updateByEmail(
+    const user = await UserModelModify.updateByEmail(
       { refresh_token: new_refresh_token },
       data.email
     );
@@ -91,12 +95,12 @@ export class AuthService {
   static async loginWithGoogle(data: UserLoginWithGoogle) {
     const { email } = validation(AuthValidation.loginWithGoogle, data);
 
-    const result = await UserUtil.upsertByEmail(data);
+    const result = await UserModelModify.upsertByEmail(data);
 
     const new_access_token = AuthHelper.createAccessToken(result);
     const new_refresh_token = AuthHelper.createRefreshToken();
 
-    const user = await UserUtil.updateByEmail(
+    const user = await UserModelModify.updateByEmail(
       { refresh_token: new_refresh_token },
       email
     );
@@ -111,7 +115,9 @@ export class AuthService {
   }
 
   static async generateNewAccessToken(refresh_token: string) {
-    const existing_user = await UserUtil.findByFields({ refresh_token });
+    const existing_user = await UserModelRetrieve.findByFields({
+      refresh_token,
+    });
 
     if (!existing_user) {
       throw new ErrorResponse(401, "no user matches the refresh token.");
@@ -124,13 +130,13 @@ export class AuthService {
   }
 
   static async clearRefreshToken(email: string) {
-    await UserUtil.updateByEmail({ refresh_token: null }, email);
+    await UserModelModify.updateByEmail({ refresh_token: null }, email);
   }
 
   static async authenticate(data: UserAutnenticate) {
     const { email, password } = validation(AuthValidation.authenticate, data);
 
-    const existing_user = await UserUtil.findByFields({ email });
+    const existing_user = await UserModelRetrieve.findByFields({ email });
 
     if (!existing_user!.password) {
       throw new ErrorResponse(400, "the user does not have a password");

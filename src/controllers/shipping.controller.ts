@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { ShippingService } from "../services/shipping.service";
 import { ShippingCache } from "../cache/shipping.cache";
 import { OrderService } from "../services/order.service";
-import { OrderUtil } from "../utils/order.util";
 import { OrderCache } from "../cache/order.cache";
-import { ProductUtil } from "../utils/product.util";
 import { OrderStatus } from "../interfaces/order.interface";
-import { ProductOrderUtil } from "../utils/product-order.util";
+import { ProductOrderModelRetrieve } from "../models/product-order/retrieve.model";
 import { ConsoleHelper } from "../helpers/console.helper";
+import { ProductModelModify } from "../models/product/modify.model";
+import { OrderModelModify } from "../models/order/modify.model";
 
 export class ShippingController {
   static async pricing(req: Request, res: Response, next: NextFunction) {
@@ -28,7 +28,7 @@ export class ShippingController {
       const shipping_id = shipping_order.order_id;
 
       const result = await OrderService.addShippingId(order_id, shipping_id);
-      await ShippingService.pickupsRequest(shipping_id);
+      await ShippingService.requestPickup(shipping_id);
 
       res.status(200).json({ data: result });
     } catch (error) {
@@ -36,13 +36,13 @@ export class ShippingController {
     }
   }
 
-  static async pickupsRequest(req: Request, res: Response, next: NextFunction) {
+  static async requestPickup(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.body.shipping_ids.length > 30) {
         return res.status(400).json({ error: "more than 30 shipping ids" });
       }
 
-      await ShippingService.pickupsRequest(req.body.shipping_ids);
+      await ShippingService.requestPickup(req.body.shipping_ids);
       res.status(200).json({ data: "requested pickup successfully" });
     } catch (error) {
       next(error);
@@ -186,17 +186,17 @@ export class ShippingController {
       const order_cache = await OrderCache.findById(order_id);
 
       if (order_cache) {
-        await ProductUtil.rollbackStocks(order_cache.products);
+        await ProductModelModify.rollbackStocks(order_cache.products);
 
-        await OrderUtil.updateById({ status: OrderStatus.CANCELED }, order_id);
+        await OrderModelModify.updateById({ status: OrderStatus.CANCELLED }, order_id);
       } else {
-        const products_order = await ProductOrderUtil.findManyById(order_id);
+        const products_order = await ProductOrderModelRetrieve.findManyById(order_id);
 
-        await ProductUtil.rollbackStocks(products_order);
-        await OrderUtil.updateById({ status: OrderStatus.CANCELED }, order_id);
+        await ProductModelModify.rollbackStocks(products_order);
+        await OrderModelModify.updateById({ status: OrderStatus.CANCELLED }, order_id);
       }
 
-      res.status(200).json({ data: "canceled order shipping successfully" });
+      res.status(200).json({ data: "cancelled order shipping successfully" });
     } catch (error) {
       next(error);
     }

@@ -1,7 +1,7 @@
 import { User } from "../interfaces/user.interface";
 
 export class UserHelper {
-  static transform(users: User[]) {
+  static sanitize(users: User[]) {
     if (!users.length) {
       return [];
     }

@@ -12,7 +12,7 @@ shippingRouter.delete("/api/shippings/:shippingId/orders/:orderId/cancellations"
 
 // super admin & admin 
 shippingRouter.post("/api/shippings/orders", authMiddleware, verifyTokenMiddleware, verifyAdminMiddleware, ShippingController.manualShipping);
-shippingRouter.post("/api/shippings/pickups", authMiddleware, verifyTokenMiddleware, verifyAdminMiddleware, ShippingController.pickupsRequest);
+shippingRouter.post("/api/shippings/pickups", authMiddleware, verifyTokenMiddleware, verifyAdminMiddleware, ShippingController.requestPickup);
 shippingRouter.post("/api/shippings/labels", authMiddleware, verifyTokenMiddleware, verifyAdminMiddleware, ShippingController.createLabel);
 
 // all

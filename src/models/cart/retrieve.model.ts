@@ -1,55 +1,9 @@
-import pool from "../apps/postgresql.app";
-import { CartHelper } from "../helpers/cart.helper";
-import { ErrorHelper } from "../helpers/error.helper";
-import { SqlHelper } from "../helpers/sql.helper";
-import { CartDelete, CartInput } from "../interfaces/cart.interface";
+import pool from "../../apps/postgresql.app";
+import { ErrorHelper } from "../../helpers/error.helper";
+import { SqlHelper } from "../../helpers/sql.helper";
+import { TransformHelper } from "../../helpers/transform.helper";
 
-export class CartUtil {
-  static async create(data: CartInput) {
-    const client = await pool.connect();
-    try {
-      const field_names = SqlHelper.getFieldNames(data);
-      const parametized_queries = SqlHelper.buildParameterizedQueries(data);
-      const field_values = SqlHelper.getFieldValues(data);
-
-      let query = `
-          INSERT INTO 
-              carts(${field_names}) 
-          VALUES 
-              (${parametized_queries}) 
-          ON CONFLICT
-              (user_id, product_id) DO NOTHING
-          RETURNING *;
-          `;
-
-      let result = await client.query(query, field_values);
-      const cart_item = result.rows[0];
-
-      if (!cart_item) {
-        return null;
-      }
-
-      query = `
-      SELECT 
-          product_name, image, rate, sold, price, stock, length, width, height, weight,
-          description, created_at, updated_at
-      FROM
-          products 
-      WHERE
-          product_id = ${data.product_id};
-      `;
-
-      result = await client.query(query);
-      const product = result.rows[0];
-
-      return { ...cart_item, ...product };
-    } catch (error) {
-      throw ErrorHelper.catch("create cart", error);
-    } finally {
-      client.release();
-    }
-  }
-
+export class CartModelRetrieve {
   static async findMany(limit: number, offset: number) {
     const client = await pool.connect();
     try {
@@ -75,7 +29,7 @@ export class CartUtil {
       `;
 
       const result = await client.query(query);
-      const carts = CartHelper.transform(result.rows);
+      const carts = TransformHelper.carts(result.rows);
 
       return carts;
     } catch (error) {
@@ -147,7 +101,7 @@ export class CartUtil {
       `;
 
       const result = await client.query(query, [tsquery_values]);
-      const carts = CartHelper.transform(result.rows);
+      const carts = TransformHelper.carts(result.rows);
 
       return carts;
     } catch (error) {
@@ -225,27 +179,6 @@ export class CartUtil {
       return total_cart_items;
     } catch (error) {
       throw ErrorHelper.catch("count cart item by product name", error);
-    } finally {
-      client.release();
-    }
-  }
-
-  static async deleteByUserAndItemId(data: CartDelete) {
-    const client = await pool.connect();
-
-    try {
-      const query = `
-      DELETE FROM 
-          carts 
-      WHERE 
-          user_id = ${data.user_id} 
-          AND 
-          cart_item_id = ${data.cart_item_id};
-      `;
-
-      await client.query(query);
-    } catch (error) {
-      throw ErrorHelper.catch("delete cart item by user and item id", error);
     } finally {
       client.release();
     }

@@ -10,7 +10,7 @@ import {
 } from "../interfaces/shipping.interface";
 import { OrderStatus, OrderWithProducts } from "../interfaces/order.interface";
 import { ShippingHelper } from "../helpers/shipping.helper";
-import { OrderUtil } from "../utils/order.util";
+import { OrderModelModify } from "../models/order/modify.model";
 import { ShippingCache } from "../cache/shipping.cache";
 import { AxiosError } from "axios";
 import ErrorResponse from "../errors/response.error";
@@ -69,7 +69,7 @@ export class ShippingService {
     }
   }
 
-  static async pickupsRequest(shipping_ids: string | string[]) {
+  static async requestPickup(shipping_ids: string | string[]) {
     try {
       const SHIPPER_BASE_URL = process.env.SHIPPER_BASE_URL;
       const SHIPPER_API_KEY = process.env.SHIPPER_API_KEY;
@@ -125,7 +125,10 @@ export class ShippingService {
     await ShippingCache.updateTrackingByShippingId(shipping_id, new_tracking);
 
     if (external_status_code === 1000) {
-      await OrderUtil.updateById({ status: OrderStatus.ON_PROGRESS }, order_id);
+      await OrderModelModify.updateById(
+        { status: OrderStatus.IN_PROGRESS },
+        order_id
+      );
     }
 
     if (
@@ -133,29 +136,38 @@ export class ShippingService {
       external_status_code === 2010 ||
       external_status_code === 3000
     ) {
-      await OrderUtil.updateById({ status: OrderStatus.COMPLETED }, order_id);
+      await OrderModelModify.updateById(
+        { status: OrderStatus.COMPLETED },
+        order_id
+      );
     }
 
     if (external_status_code === 1340) {
-      await OrderUtil.updateById(
-        { status: OrderStatus.RETURN_PROCESS },
+      await OrderModelModify.updateById(
+        { status: OrderStatus.RETURN_PROCESSING },
         order_id
       );
     }
 
     if (external_status_code === 1370) {
-      await OrderUtil.updateById({ status: OrderStatus.FAILED }, order_id);
+      await OrderModelModify.updateById(
+        { status: OrderStatus.FAILED },
+        order_id
+      );
     }
 
     if (external_status_code === 1380) {
-      await OrderUtil.updateById(
+      await OrderModelModify.updateById(
         { status: OrderStatus.LOST_OR_DAMAGED },
         order_id
       );
     }
 
     if (external_status_code === 999) {
-      await OrderUtil.updateById({ status: OrderStatus.CANCELED }, order_id);
+      await OrderModelModify.updateById(
+        { status: OrderStatus.CANCELLED },
+        order_id
+      );
     }
   }
 

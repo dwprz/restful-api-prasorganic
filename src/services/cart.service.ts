@@ -1,7 +1,12 @@
 import ErrorResponse from "../errors/response.error";
 import { PagingHelper } from "../helpers/paging.helper";
-import { CartByProductName, CartDelete, CartInput } from "../interfaces/cart.interface";
-import { CartUtil } from "../utils/cart.util";
+import {
+  CartByProductName,
+  CartDelete,
+  CartInput,
+} from "../interfaces/cart.interface";
+import { CartModelModify } from "../models/cart/modify.model";
+import { CartModelRetrieve } from "../models/cart/retrieve.model";
 import { CartValidation } from "../validations/schema/cart.validation";
 import validation from "../validations/validation";
 
@@ -9,7 +14,7 @@ export class CartService {
   static async create(data: CartInput) {
     validation(CartValidation.create, data);
 
-    const total_cart_items = await CartUtil.countByFields({
+    const total_cart_items = await CartModelRetrieve.countByFields({
       user_id: data.user_id,
     });
 
@@ -17,7 +22,7 @@ export class CartService {
       throw new ErrorResponse(400, "sorry, this user already has 20 cart item");
     }
 
-    const cart_item = await CartUtil.create(data);
+    const cart_item = await CartModelModify.create(data);
     return cart_item;
   }
 
@@ -26,9 +31,9 @@ export class CartService {
 
     const { limit, offset } = PagingHelper.createLimitAndOffset(page);
 
-    const carts = await CartUtil.findMany(limit, offset);
+    const carts = await CartModelRetrieve.findMany(limit, offset);
 
-    const total_cart_items = await CartUtil.count();
+    const total_cart_items = await CartModelRetrieve.count();
 
     const result = PagingHelper.formatPagedData(
       carts,
@@ -43,7 +48,7 @@ export class CartService {
   static async getByUserId(user_id: number) {
     validation(CartValidation.user_id, user_id);
 
-    const cart = await CartUtil.findManyByUserId(user_id);
+    const cart = await CartModelRetrieve.findManyByUserId(user_id);
     return cart;
   }
 
@@ -52,13 +57,13 @@ export class CartService {
 
     const { limit, offset } = PagingHelper.createLimitAndOffset(data.page);
 
-    const carts = await CartUtil.findManyByProductName(
+    const carts = await CartModelRetrieve.findManyByProductName(
       data.product_name,
       limit,
       offset
     );
 
-    const total_cart_items = await CartUtil.countByProductName(
+    const total_cart_items = await CartModelRetrieve.countByProductName(
       data.product_name
     );
 
@@ -75,6 +80,6 @@ export class CartService {
   static async deleteByUserAndItemId(data: CartDelete) {
     validation(CartValidation.delete, data);
 
-    await CartUtil.deleteByUserAndItemId(data);
+    await CartModelModify.deleteByUserAndItemId(data);
   }
 }

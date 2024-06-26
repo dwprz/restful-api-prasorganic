@@ -37,15 +37,13 @@ orderShippingQueue.process(async (job) => {
   const { order_id } = job.data;
   const client = await pool.connect();
   try {
-    let order_with_products = await OrderCache.findById(order_id);
+    let order = await OrderCache.findById(order_id);
 
-    if (!order_with_products) {
-      order_with_products = await OrderService.getById(order_id);
+    if (!order) {
+      order = await OrderService.getById(order_id);
     }
 
-    const shipping_order = await ShippingService.orderShipping(
-      order_with_products
-    );
+    const shipping_order = await ShippingService.orderShipping(order);
 
     const shipping_id = shipping_order.order_id;
     await OrderService.addShippingId(order_id, shipping_id);

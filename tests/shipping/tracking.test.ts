@@ -18,7 +18,7 @@ describe("GET /api/shippings/:shippingId/trackings", () => {
   let admin_password: string;
 
   let user_id: number;
-  let order_with_products: OrderWithProducts;
+  let order: OrderWithProducts;
   let order_id: string;
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
@@ -35,13 +35,13 @@ describe("GET /api/shippings/:shippingId/trackings", () => {
   beforeEach(async () => {
     order_id = nanoid();
 
-    const order_details = await OrderTestUtil.createWithProductsOrder(
+    const order_details = await OrderTestUtil.create(
       user_id,
       order_id,
       OrderStatus.PAID
     );
 
-    order_with_products = order_details!;
+    order = order_details!;
   });
 
   afterAll(async () => {
@@ -53,7 +53,7 @@ describe("GET /api/shippings/:shippingId/trackings", () => {
   });
 
   afterEach(async () => {
-    await OrderTestUtil.deleteWithProductsOrder(order_id);
+    await OrderTestUtil.delete(order_id);
   });
 
   it("tracking order shipping should be successful", async () => {
@@ -69,7 +69,7 @@ describe("GET /api/shippings/:shippingId/trackings", () => {
 
     const shipping_result = await supertest(app)
       .post(`/api/shippings/orders`)
-      .send(order_with_products)
+      .send(order)
       .set("Cookie", cookies!)
       .set("Authorization", AUTHORIZATION_SECRET!);
 

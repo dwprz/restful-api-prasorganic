@@ -49,11 +49,7 @@ export class OrderTestUtil {
     },
   ];
 
-  static async createWithProductsOrder(
-    user_id: number,
-    order_id: string,
-    status: OrderStatus
-  ) {
+  static async create(user_id: number, order_id: string, status: OrderStatus) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN TRANSACTION;");
@@ -108,14 +104,14 @@ export class OrderTestUtil {
     }
   }
 
-  static async deleteWithProductsOrder(order_id: string) {
+  static async delete(order_id: string) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN TRANSACTION;");
 
       let query = `
-        DELETE FROM products_orders WHERE order_id = '${order_id}'; 
-        `;
+      DELETE FROM products_orders WHERE order_id = '${order_id}'; 
+      `;
 
       await client.query(query);
 

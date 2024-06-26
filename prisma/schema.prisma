@@ -14,19 +14,19 @@ datasource db {
 }
 
 model User {
-  user_id       Int       @id @default(autoincrement())
-  email         String    @unique @db.VarChar(100)
-  full_name     String    @db.VarChar(100)
-  password      String?   @db.VarChar(100)
-  role          UserRole  @default(USER)
-  photo_profile String?   @db.VarChar(500)
-  whatsapp      String?   @db.VarChar(20)
-  refresh_token String?   @unique @db.VarChar(1000)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime? @updatedAt
-  cart          Cart[]
-  addresses     Address[]
-  orders        Order[]
+  user_id                  Int                        @id @default(autoincrement())
+  email                    String                     @unique @db.VarChar(100)
+  full_name                String                     @db.VarChar(100)
+  password                 String?                    @db.VarChar(100)
+  role                     UserRole                   @default(USER)
+  photo_profile            String?                    @db.VarChar(500)
+  whatsapp                 String?                    @db.VarChar(20)
+  refresh_token            String?                    @unique @db.VarChar(1000)
+  created_at               DateTime                   @default(now())
+  updated_at               DateTime?                  @updatedAt
+  cart                     Cart[]
+  addresses                Address[]
+  orders                   Order[]
 
   @@map("users")
 }
@@ -181,7 +181,7 @@ model Order {
   gross_amount Int         @db.Integer
   status       OrderStatus @default(PENDING_PAYMENT)
 
-  shipping_id    String? @db.VarChar(100)
+  shipping_id   String? @db.VarChar(100)
   courier       String  @db.VarChar(50)
   rate_id       Int     @db.Integer
   rate_name     String  @db.VarChar(50)
@@ -219,7 +219,7 @@ model Order {
 
   user User @relation(fields: [user_id], references: [user_id])
 
-  products ProductOrder[]
+  products        ProductOrder[]
 
   @@map("orders")
 }
@@ -227,11 +227,13 @@ model Order {
 enum OrderStatus {
   PENDING_PAYMENT
   PAID
-  ON_PROGRESS
+  IN_PROGRESS
   COMPLETED
-  CANCELED
+  CANCELLED
   FAILED
-  RETURN_PROCESS
+  REFUND_PROCESSING
+  REFUND_COMPLETED
+  RETURN_PROCESSING
   LOST_OR_DAMAGED
 }
 
@@ -248,3 +250,4 @@ model ProductOrder {
 
   @@map("products_orders")
 }
+

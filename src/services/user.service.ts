@@ -11,7 +11,8 @@ import {
   UserUpdatePhotoProfile,
   UserUpdateProfile,
 } from "../interfaces/user.interface";
-import { UserUtil } from "../utils/user.util";
+import { UserModelModify } from "../models/user/modify.model";
+import { UserModelRetrieve } from "../models/user/retrieve.model";
 import { UserValidation } from "../validations/schema/user.validation";
 import validation from "../validations/validation";
 import { AuthService } from "./auth.service";
@@ -21,7 +22,7 @@ export class UserService {
   static async getByEmail(email: string) {
     email = validation(UserValidation.email, email);
 
-    const { password, refresh_token, ...user } = await UserUtil.findByFields({
+    const { password, refresh_token, ...user } = await UserModelRetrieve.findByFields({
       email,
     });
 
@@ -33,14 +34,14 @@ export class UserService {
 
     const { limit, offset } = PagingHelper.createLimitAndOffset(page);
 
-    const existing_users = await UserUtil.findManyByFields(
+    const existing_users = await UserModelRetrieve.findManyByFields(
       { role },
       limit,
       offset
     );
 
-    const users = UserHelper.transform(existing_users);
-    const total_users = await UserUtil.countByFields({ role });
+    const users = UserHelper.sanitize(existing_users);
+    const total_users = await UserModelRetrieve.countByFields({ role });
 
     const result = PagingHelper.formatPagedData(
       users,
@@ -60,14 +61,14 @@ export class UserService {
 
     const { limit, offset } = PagingHelper.createLimitAndOffset(page);
 
-    const existing_users = await UserUtil.findManyByFields(
+    const existing_users = await UserModelRetrieve.findManyByFields(
       { full_name, role },
       limit,
       offset
     );
 
-    const users = UserHelper.transform(existing_users);
-    const total_users = await UserUtil.countByFields({
+    const users = UserHelper.sanitize(existing_users);
+    const total_users = await UserModelRetrieve.countByFields({
       role,
       full_name,
     });
@@ -88,7 +89,7 @@ export class UserService {
       data
     );
 
-    const existing_user = await UserUtil.findByFields({ email: data.email });
+    const existing_user = await UserModelRetrieve.findByFields({ email: data.email });
 
     if (!existing_user.password) {
       throw new ErrorResponse(400, "the user does not have a password");
@@ -96,7 +97,7 @@ export class UserService {
 
     await AuthHelper.comparePassword(password, existing_user.password);
 
-    const user = await UserUtil.updateByEmail(updateData, data.email);
+    const user = await UserModelModify.updateByEmail(updateData, data.email);
 
     return user;
   }
@@ -111,7 +112,7 @@ export class UserService {
       FileHelper.deleteByUrl(photo_profile);
     }
 
-    const user = await UserUtil.updateByEmail(
+    const user = await UserModelModify.updateByEmail(
       { photo_profile: new_photo_profile },
       email
     );
@@ -125,7 +126,7 @@ export class UserService {
       data
     );
 
-    const existing_user = await UserUtil.findByFields({ email });
+    const existing_user = await UserModelRetrieve.findByFields({ email });
 
     if (!existing_user.password) {
       throw new ErrorResponse(400, "the user does not have a password");
@@ -135,7 +136,7 @@ export class UserService {
 
     new_password = await bcrypt.hash(new_password, 10);
 
-    await UserUtil.updateByEmail({ password: new_password }, email);
+    await UserModelModify.updateByEmail({ password: new_password }, email);
   }
 
   static async updateEmail(data: UserUpdateEmail) {
@@ -144,11 +145,11 @@ export class UserService {
       data
     );
 
-    const existing_user = await UserUtil.findByFields({ email });
+    const existing_user = await UserModelRetrieve.findByFields({ email });
 
     await AuthService.verifyOtp({ email: new_email, otp: otp });
 
-    const user = await UserUtil.updateByEmail({ email: new_email }, email);
+    const user = await UserModelModify.updateByEmail({ email: new_email }, email);
 
     const access_token = AuthHelper.createAccessToken({
       ...existing_user,

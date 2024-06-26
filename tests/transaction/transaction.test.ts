@@ -39,7 +39,7 @@ describe("POST /api/transactions", () => {
 
   afterEach(async () => {
     if (order_id) {
-      await OrderTestUtil.deleteWithProductsOrder(order_id);
+      await OrderTestUtil.delete(order_id);
     }
   });
 

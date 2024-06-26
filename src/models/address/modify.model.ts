@@ -1,10 +1,13 @@
-import pool from "../apps/postgresql.app";
-import ErrorResponse from "../errors/response.error";
-import { SqlHelper } from "../helpers/sql.helper";
-import { AddressInput, AddressUpdate } from "../interfaces/address.interface";
-import { ErrorHelper } from "../helpers/error.helper";
+import pool from "../../apps/postgresql.app";
+import ErrorResponse from "../../errors/response.error";
+import { ErrorHelper } from "../../helpers/error.helper";
+import { SqlHelper } from "../../helpers/sql.helper";
+import {
+  AddressInput,
+  AddressUpdate,
+} from "../../interfaces/address.interface";
 
-export class AddressUtil {
+export class AddressModelModify {
   static async create(data: AddressInput) {
     const client = await pool.connect();
     try {
@@ -12,16 +15,16 @@ export class AddressUtil {
 
       if (data.is_main_address) {
         const query = `
-        UPDATE
-            addresses 
-        SET 
-            is_main_address = CASE
-            WHEN is_main_address = TRUE THEN FALSE
-            ELSE is_main_address
-            END
-        WHERE 
-            user_id = ${data.user_id};
-        `;
+            UPDATE
+                addresses 
+            SET 
+                is_main_address = CASE
+                WHEN is_main_address = TRUE THEN FALSE
+                ELSE is_main_address
+                END
+            WHERE 
+                user_id = ${data.user_id};
+            `;
 
         await client.query(query);
       }
@@ -31,12 +34,12 @@ export class AddressUtil {
       const parameterized_queries = SqlHelper.buildParameterizedQueries(data);
 
       const query = `
-      INSERT INTO 
-            addresses(${field_names}, created_at, updated_at)
-      VALUES
-            (${parameterized_queries}, now(), now())
-      RETURNING *;
-      `;
+          INSERT INTO 
+                addresses(${field_names}, created_at, updated_at)
+          VALUES
+                (${parameterized_queries}, now(), now())
+          RETURNING *;
+          `;
 
       const result = await client.query(query, field_values);
       const address = result.rows[0];
@@ -48,22 +51,6 @@ export class AddressUtil {
       await client.query("ROLLBACK TRANSACTION;");
 
       throw ErrorHelper.catch("create address", error);
-    } finally {
-      client.release();
-    }
-  }
-
-  static async findManyByUserId(user_id: number) {
-    const client = await pool.connect();
-    try {
-      const query = `SELECT * FROM addresses WHERE user_id = ${user_id};`;
-
-      const result = await client.query(query);
-      const addresses = result.rows;
-
-      return addresses;
-    } catch (error) {
-      throw ErrorHelper.catch("find addresses by user id", error);
     } finally {
       client.release();
     }

@@ -9,6 +9,7 @@ import addressRouter from "../routers/addess.router";
 import cartRouter from "../routers/cart.router";
 import transactionRouter from "../routers/transaction.router";
 import shippingRouter from "../routers/shipping.router";
+import orderRouter from "../routers/order.router";
 
 const corsOpt = {
   credentials: true,
@@ -29,6 +30,7 @@ app.use(cartRouter);
 app.use(addressRouter);
 app.use(transactionRouter);
 app.use(shippingRouter);
+app.use(orderRouter);
 app.use(errorMiddleware);
 
 export default app;

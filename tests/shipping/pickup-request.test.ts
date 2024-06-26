@@ -22,7 +22,7 @@ describe("POST /api/shippings/pickups", () => {
   let user_email: string;
   let user_password: string;
 
-  let order_with_products: OrderWithProducts;
+  let order: OrderWithProducts;
   let order_id: string;
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
@@ -41,13 +41,13 @@ describe("POST /api/shippings/pickups", () => {
   beforeEach(async () => {
     order_id = nanoid();
 
-    const order_details = await OrderTestUtil.createWithProductsOrder(
+    const order_details = await OrderTestUtil.create(
       user_id,
       order_id,
       OrderStatus.PAID
     );
 
-    order_with_products = order_details!;
+    order = order_details!;
   });
 
   afterAll(async () => {
@@ -59,7 +59,7 @@ describe("POST /api/shippings/pickups", () => {
   });
 
   afterEach(async () => {
-    await OrderTestUtil.deleteWithProductsOrder(order_id);
+    await OrderTestUtil.delete(order_id);
   });
 
   it("pickup request should be successful", async () => {
@@ -73,10 +73,7 @@ describe("POST /api/shippings/pickups", () => {
 
     const cookies = login_result.get("Set-Cookie");
 
-    const shipping_order = await ShippingService.orderShipping(
-      order_with_products
-    );
-
+    const shipping_order = await ShippingService.orderShipping(order);
     const shipping_id = shipping_order.order_id;
 
     const result = await supertest(app)
@@ -91,7 +88,7 @@ describe("POST /api/shippings/pickups", () => {
     expect(result.body.data).toBeDefined();
   }, 15000);
 
-  it("pickup request should be fail if not super admin", async () => {
+  it("pickup request should fail if not super admin", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
@@ -114,7 +111,7 @@ describe("POST /api/shippings/pickups", () => {
     expect(result.body.error).toBeDefined();
   });
 
-  it("pickup request shipping should be fail without authorization", async () => {
+  it("pickup request shipping should fail without authorization", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({

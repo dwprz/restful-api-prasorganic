@@ -2,11 +2,10 @@ import axios from "axios";
 import { EnvHelper } from "../helpers/env.helper";
 import "dotenv/config";
 import { TransactionHelper } from "../helpers/transaction.helper";
-import { OrderUtil } from "../utils/order.util";
+import { OrderModelModify } from "../models/order/modify.model";
 import { Order, OrderStatus } from "../interfaces/order.interface";
 import { ProductService } from "./product.service";
 import { ErrorHelper } from "../helpers/error.helper";
-import { ShippingService } from "./shipping.service";
 import orderShippingQueue from "../queue/shipping.queue";
 
 export class TransactionService {
@@ -46,7 +45,7 @@ export class TransactionService {
         (transaction_status === "capture" && data.fraud_status === "accept") ||
         transaction_status === "settlement"
       ) {
-        await OrderUtil.updateById(
+        await OrderModelModify.updateById(
           { payment_method, status: OrderStatus.PAID },
           order_id
         );
@@ -57,13 +56,19 @@ export class TransactionService {
       if (transaction_status === "cancel") {
         await ProductService.rollbackStocks(order_id);
 
-        await OrderUtil.updateById({ status: OrderStatus.CANCELED }, order_id);
+        await OrderModelModify.updateById(
+          { status: OrderStatus.CANCELLED },
+          order_id
+        );
       }
 
       if (transaction_status === "deny" || transaction_status === "expire") {
         await ProductService.rollbackStocks(order_id);
 
-        await OrderUtil.updateById({ status: OrderStatus.FAILED }, order_id);
+        await OrderModelModify.updateById(
+          { status: OrderStatus.FAILED },
+          order_id
+        );
       }
     } catch (error) {
       return { error: error };

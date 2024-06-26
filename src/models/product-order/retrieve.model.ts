@@ -1,9 +1,9 @@
-import pool from "../apps/postgresql.app";
-import ErrorResponse from "../errors/response.error";
-import { ErrorHelper } from "../helpers/error.helper";
-import { ProductOrder } from "../interfaces/order.interface";
+import pool from "../../apps/postgresql.app";
+import ErrorResponse from "../../errors/response.error";
+import { ErrorHelper } from "../../helpers/error.helper";
+import { ProductOrder } from "../../interfaces/order.interface";
 
-export class ProductOrderUtil {
+export class ProductOrderModelRetrieve {
   static async findManyById(order_id: string) {
     const client = await pool.connect();
     try {

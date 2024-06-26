@@ -36,23 +36,19 @@ describe("POST /api/shippings/labels", () => {
 
     order_id = nanoid();
 
-    const order_details = await OrderTestUtil.createWithProductsOrder(
+    const order = await OrderTestUtil.create(
       user_id,
       order_id,
       OrderStatus.PAID
     );
 
-    const order_with_products = order_details!;
-
-    const shipping_order = await ShippingService.orderShipping(
-      order_with_products
-    );
+    const shipping_order = await ShippingService.orderShipping(order!);
 
     shipping_id = shipping_order.order_id;
   });
 
   afterAll(async () => {
-    await OrderTestUtil.deleteWithProductsOrder(order_id);
+    await OrderTestUtil.delete(order_id);
     await UserTestUtil.deleteSuperAdmin();
     await UserTestUtil.deleteUser();
     await pool.end();
@@ -108,7 +104,7 @@ describe("POST /api/shippings/labels", () => {
     expect(result.body.data).toBeDefined();
   }, 15000);
 
-  it("create shipping label should be fail if not super admin", async () => {
+  it("create shipping label should fail if not super admin", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
@@ -132,7 +128,7 @@ describe("POST /api/shippings/labels", () => {
     expect(result.body.error).toBeDefined();
   });
 
-  it("create shipping label should be fail without authorization", async () => {
+  it("create shipping label should fail without authorization", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({

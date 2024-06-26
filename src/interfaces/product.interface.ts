@@ -17,7 +17,7 @@ export interface Product {
   categories?: string | string[];
 }
 
-export interface ProductInput {
+export interface ProductWithCategoriesInput {
   product_name: string;
   image: string;
   price: number;
@@ -28,6 +28,18 @@ export interface ProductInput {
   weight: number;
   description?: string;
   categories: string | string[];
+}
+
+export interface ProductInput {
+  product_name: string;
+  image: string;
+  price: number;
+  stock: number;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  description?: string;
 }
 
 export interface ProductQuery {

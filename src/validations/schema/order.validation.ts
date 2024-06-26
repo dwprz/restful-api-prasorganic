@@ -52,10 +52,53 @@ export class OrderValidation {
         total_gross_price: z.number(),
       }).strict()
     ),
-  });
+  }).strict();
+
+  static getByUserId: ZodType = z.object({
+    user_id: z.number().int(),
+    page: z.number().int().max(100),
+  }).strict();
+
+  static getByStatus: ZodType = z.object({
+    status: z.enum([
+      "PENDING_PAYMENT", 
+      "PAID", 
+      "IN_PROGRESS", 
+      "COMPLETED", 
+      "CANCELLED", 
+      "FAILED", 
+      "REFUND_PROCESSING",
+      "REFUND_COMPLETED",
+      "RETURN_PROCESSING", 
+      "RETURN_COMPLETED",
+      "LOST_OR_DAMAGED"]).nullable(),
+
+    page: z.number().int().max(100),
+  }).strict();
 
   static addShippingId: ZodType = z.object({
     order_id: z.string().max(100).regex(this.pattern),
     shipping_id: z.string().max(100).regex(this.pattern),
   }).strict()
+
+  static cancel: ZodType = z.object({
+    user_id: z.number().int(),
+    order_id: z.string().max(100).regex(this.pattern),
+  }).strict();
+
+  static update: ZodType =  z.object({
+    order_id: z.string().max(100).regex(this.pattern),
+    status: z.enum([
+      "PENDING_PAYMENT", 
+      "PAID", 
+      "IN_PROGRESS", 
+      "COMPLETED", 
+      "CANCELLED", 
+      "FAILED", 
+      "REFUND_PROCESSING",
+      "REFUND_COMPLETED",
+      "RETURN_PROCESSING", 
+      "RETURN_COMPLETED",
+      "LOST_OR_DAMAGED"]),
+  }).strict();
 }

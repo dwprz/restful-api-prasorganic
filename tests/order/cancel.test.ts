@@ -3,49 +3,36 @@ import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import { OrderTestUtil } from "../order/order-test.util";
-import {
-  OrderStatus,
-  OrderWithProducts,
-} from "../../src/interfaces/order.interface";
+import { OrderTestUtil } from "./order-test.util";
+import { OrderStatus } from "../../src/interfaces/order.interface";
 import orderShippingQueue from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
 
-// npx jest tests/shipping/shipping.test.ts
+// npx jest tests/order/cancel.test.ts
 
-describe("POST /api/shippings/orders", () => {
-  let admin_email: string;
-  let admin_password: string;
-
+describe("PATCH /api/orders/:orderId/cancellations", () => {
   let user_id: number;
-  let order: OrderWithProducts;
+  let user_email: string;
+  let user_password: string;
+
   let order_id: string;
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const admin = await UserTestUtil.createAdmin();
-    admin_email = admin!.email;
-    admin_password = admin!.password;
-
     const user = await UserTestUtil.createUser();
     user_id = user!.user_id;
+    user_email = user!.email;
+    user_password = user!.password;
   });
 
   beforeEach(async () => {
     order_id = nanoid();
 
-    const order_details = await OrderTestUtil.create(
-      user_id,
-      order_id,
-      OrderStatus.PAID
-    );
-
-    order = order_details!;
+    await OrderTestUtil.create(user_id, order_id, OrderStatus.PENDING_PAYMENT);
   });
 
   afterAll(async () => {
-    await UserTestUtil.deleteAdmin();
     await UserTestUtil.deleteUser();
     await pool.end();
     await redis.quit();
@@ -56,20 +43,19 @@ describe("POST /api/shippings/orders", () => {
     await OrderTestUtil.delete(order_id);
   });
 
-  it("order shipping should be successful", async () => {
+  it("cancel order should be successful", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
-        email: admin_email,
-        password: admin_password,
+        email: user_email,
+        password: user_password,
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
     const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
-      .post(`/api/shippings/orders`)
-      .send(order)
+      .patch(`/api/orders/${order_id}/cancellations`)
       .set("Cookie", cookies!)
       .set("Authorization", AUTHORIZATION_SECRET!);
 
@@ -77,20 +63,19 @@ describe("POST /api/shippings/orders", () => {
     expect(result.body.data).toBeDefined();
   });
 
-  it("order shipping should fail without authorization", async () => {
+  it("cancel order should fail without authorization", async () => {
     const login_result = await supertest(app)
       .post("/api/users/current/login")
       .send({
-        email: admin_email,
-        password: admin_password,
+        email: user_email,
+        password: user_password,
       })
       .set("Authorization", AUTHORIZATION_SECRET!);
 
     const cookies = login_result.get("Set-Cookie");
 
     const result = await supertest(app)
-      .post(`/api/shippings/orders`)
-      .send(order)
+      .patch(`/api/orders/${order_id}/cancellations`)
       .set("Cookie", cookies!);
 
     expect(result.status).toBe(401);
