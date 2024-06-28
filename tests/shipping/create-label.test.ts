@@ -5,7 +5,10 @@ import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import { OrderTestUtil } from "../order/order-test.util";
 import { OrderStatus } from "../../src/interfaces/order.interface";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 import { ShippingService } from "../../src/services/shipping.service";
 import { nanoid } from "nanoid";
 
@@ -54,6 +57,10 @@ describe("POST /api/shippings/labels", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("create shipping labels should be successful", async () => {

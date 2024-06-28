@@ -4,7 +4,10 @@ import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/address/create.test.ts
 
@@ -28,6 +31,10 @@ describe("POST /api/addresses", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit()
+    }
   });
 
   it("create address should be successful", async () => {

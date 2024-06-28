@@ -4,7 +4,10 @@ import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import { AddressTestUtil } from "./address-test.util";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/address/delete.test.ts
 
@@ -33,6 +36,10 @@ describe("DELETE /api/addresses/:addressId", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("delete address should be successful", async () => {

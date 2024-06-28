@@ -5,7 +5,10 @@ import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import { OrderTestUtil } from "./order-test.util";
 import { OrderStatus } from "../../src/interfaces/order.interface";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
 
 // npx jest tests/order/update-status.test.ts
@@ -45,6 +48,10 @@ describe("PATCH /api/orders/:orderId/statuses", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   afterEach(async () => {

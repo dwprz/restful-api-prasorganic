@@ -5,7 +5,10 @@ import { ProductTestUtil } from "./product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import { UserTestUtil } from "../user/user-test.util";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/product/get-deleted.test.ts
 
@@ -40,6 +43,10 @@ describe("GET /api/products/deleted", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("get deleted products should be successful", async () => {

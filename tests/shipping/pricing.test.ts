@@ -3,7 +3,10 @@ import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/shippings/pricing.test.ts
 
@@ -24,6 +27,10 @@ describe("POST /api/shippings/pricings", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("pricing order shipping should be successful", async () => {

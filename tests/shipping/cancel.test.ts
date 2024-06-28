@@ -8,7 +8,10 @@ import {
   OrderStatus,
   OrderWithProducts,
 } from "../../src/interfaces/order.interface";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
 
 // npx jest tests/shipping/cancel.test.ts
@@ -55,6 +58,10 @@ describe("DELETE /api/shippings/:shippingId/orders/:orderId/cancellations", () =
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   afterEach(async () => {

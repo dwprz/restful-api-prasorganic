@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    command: postgres -c config_file=/etc/postgresql.conf
+    command: [ "postgres", "-c", "config_file=/etc/postgresql.conf" ]
     volumes:
       - type: volume
         source: data-postgres-prasorganic
@@ -16,25 +16,130 @@ services:
         source: ./docs/postgresql/postgresql.conf
         target: /etc/postgresql.conf
     networks:
-      - prasorganic-networks
+      - prasorganic-network
     restart: on-failure
 
-  redis-prasorganic:
-    image: "redis:7.2.2"
-    container_name: redis-prasorganic
+  redis-prasorganic-node-1:
+    image: "redis:7.4-rc1-alpine3.20"
+    container_name: redis-prasorganic-node-1
     ports:
-      - "6379:6379"
+      - "6371:6379"
+      - "16371:16379"
     volumes:
       - type: bind
-        source: ./docs/redis
-        target: /usr/local/etc/redis
+        source: ./docs/redis/redis-node-1.conf
+        target: /usr/local/etc/redis/redis.conf
       - type: volume
         source: data-redis-prasorganic
         target: /data
     networks:
-      - prasorganic-networks
-    command: redis-server /usr/local/etc/redis/redis.conf
+      prasorganic-network:
+          ipv4_address: 172.38.0.11
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     restart: on-failure
+
+  redis-prasorganic-node-2:
+    image: "redis:7.4-rc1-alpine3.20"
+    container_name: redis-prasorganic-node-2
+    ports:
+      - "6372:6379"
+      - "16372:16379"
+    volumes:
+      - type: bind
+        source: ./docs/redis/redis-node-2.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: data-redis-prasorganic
+        target: /data
+    networks:
+      prasorganic-network:
+          ipv4_address: 172.38.0.12
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    restart: on-failure
+
+  redis-prasorganic-node-3:
+    image: "redis:7.4-rc1-alpine3.20"
+    container_name: redis-prasorganic-node-3
+    ports:
+      - "6373:6379"
+      - "16373:16379"
+    volumes:
+      - type: bind
+        source: ./docs/redis/redis-node-3.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: data-redis-prasorganic
+        target: /data
+    networks:
+      prasorganic-network:
+          ipv4_address: 172.38.0.13
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    restart: on-failure
+
+  redis-prasorganic-node-4:
+    image: "redis:7.4-rc1-alpine3.20"
+    container_name: redis-prasorganic-node-4
+    ports:
+      - "6374:6379"
+      - "16374:16379"
+    volumes:
+      - type: bind
+        source: ./docs/redis/redis-node-4.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: data-redis-prasorganic
+        target: /data
+    networks:
+      prasorganic-network:
+          ipv4_address: 172.38.0.14
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    restart: on-failure
+  
+  redis-prasorganic-node-5:
+    image: "redis:7.4-rc1-alpine3.20"
+    container_name: redis-prasorganic-node-5
+    ports:
+      - "6375:6379"
+      - "16375:16379"
+    volumes:
+      - type: bind
+        source: ./docs/redis/redis-node-5.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: data-redis-prasorganic
+        target: /data
+    networks:
+      prasorganic-network:
+          ipv4_address: 172.38.0.15
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    restart: on-failure
+  
+  redis-prasorganic-node-6:
+    image: "redis:7.4-rc1-alpine3.20"
+    container_name: redis-prasorganic-node-6
+    ports:
+      - "6376:6379"
+      - "16376:16379"
+    volumes:
+      - type: bind
+        source: ./docs/redis/redis-node-6.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: data-redis-prasorganic
+        target: /data
+    networks:
+      prasorganic-network:
+          ipv4_address: 172.38.0.16
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    restart: on-failure
+
+  redis-insight:
+      image: "redislabs/redisinsight:2.50" 
+      container_name: redis-insight
+      ports:
+        - "5540:5540"
+      networks:
+        - prasorganic-network
 
   prasorganic-restfulapi:
     container_name: prasorganic-restfulapi
@@ -51,10 +156,15 @@ services:
         source: ./
         target: /app
     networks:
-      - prasorganic-networks
+      - prasorganic-network
     depends_on:
       - postgres-prasorganic
-      - redis-prasorganic
+      - redis-prasorganic-node-1
+      - redis-prasorganic-node-2
+      - redis-prasorganic-node-3
+      - redis-prasorganic-node-4
+      - redis-prasorganic-node-5
+      - redis-prasorganic-node-6
     restart: no
 
 volumes:
@@ -64,6 +174,11 @@ volumes:
     name: data-redis-prasorganic
 
 networks:
-  prasorganic-networks:
-    name: prasorganic-networks
+  prasorganic-network:
+    name: prasorganic-network
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.38.0.0/16
+          gateway: 172.38.0.1
+

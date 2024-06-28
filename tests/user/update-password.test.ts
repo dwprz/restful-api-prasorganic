@@ -3,14 +3,17 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/user/update-password.test.ts
 
 describe("PATCH /api/users/current/password", () => {
   let user_email: string;
   let user_password: string;
-  
+
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
@@ -24,6 +27,10 @@ describe("PATCH /api/users/current/password", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("update user password should be successful", async () => {

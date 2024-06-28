@@ -3,7 +3,10 @@ import app from "../../src/apps/application.app";
 import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/user/update.test.ts
 
@@ -26,6 +29,10 @@ describe("PATCH /api/users/current", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("update user should be successful", async () => {

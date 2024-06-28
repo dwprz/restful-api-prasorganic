@@ -3,7 +3,10 @@ import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import { UserTestUtil } from "../user/user-test.util";
 import redis from "../../src/apps/redis.app";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/auth/logout.test.ts
 
@@ -23,6 +26,10 @@ describe("PATCH /api/users/current/logout", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("logout user should be successful", async () => {

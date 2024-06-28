@@ -5,7 +5,10 @@ import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import { OrderTestUtil } from "../order/order-test.util";
 import { OrderStatus } from "../../src/interfaces/order.interface";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
 
 // npx jest tests/order/get-by-current-user.test.ts
@@ -36,6 +39,10 @@ describe("GET /api/orders/users/current", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("get orders by current user should be successful", async () => {

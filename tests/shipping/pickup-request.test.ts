@@ -8,7 +8,10 @@ import {
   OrderStatus,
   OrderWithProducts,
 } from "../../src/interfaces/order.interface";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 import { ShippingService } from "../../src/services/shipping.service";
 import { nanoid } from "nanoid";
 
@@ -56,6 +59,10 @@ describe("POST /api/shippings/pickups", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   afterEach(async () => {

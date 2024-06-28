@@ -8,7 +8,10 @@ import {
   OrderStatus,
   OrderWithProducts,
 } from "../../src/interfaces/order.interface";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
 
 // npx jest tests/shipping/shipping.test.ts
@@ -50,6 +53,10 @@ describe("POST /api/shippings/orders", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   afterEach(async () => {
@@ -75,7 +82,7 @@ describe("POST /api/shippings/orders", () => {
 
     expect(result.status).toBe(200);
     expect(result.body.data).toBeDefined();
-  });
+  }, 15000);
 
   it("order shipping should fail without authorization", async () => {
     const login_result = await supertest(app)

@@ -5,7 +5,10 @@ import { ProductTestUtil } from "../product/product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import { OrderTestUtil } from "../order/order-test.util";
-import orderShippingQueue from "../../src/queue/shipping.queue";
+import {
+  orderShippingQueue,
+  orderShippingRedisClients,
+} from "../../src/queue/shipping.queue";
 
 // npx jest tests/transaction/transaction.test.ts
 
@@ -49,6 +52,10 @@ describe("POST /api/transactions", () => {
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
+
+    for (const client of orderShippingRedisClients) {
+      await client.quit();
+    }
   });
 
   it("transaction with midtrans should be successful", async () => {

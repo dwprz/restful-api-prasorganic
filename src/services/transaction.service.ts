@@ -6,7 +6,7 @@ import { OrderModelModify } from "../models/order/modify.model";
 import { Order, OrderStatus } from "../interfaces/order.interface";
 import { ProductService } from "./product.service";
 import { ErrorHelper } from "../helpers/error.helper";
-import orderShippingQueue from "../queue/shipping.queue";
+import { orderShippingQueue } from "../queue/shipping.queue";
 
 export class TransactionService {
   static async transaction(data: Order) {
