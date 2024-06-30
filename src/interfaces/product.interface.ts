@@ -2,7 +2,7 @@ export interface Product {
   product_id: number;
   product_name: string;
   image: string;
-  rate: number | null;
+  rating: number | null;
   sold: number | null;
   price: number;
   stock: number;
@@ -51,7 +51,7 @@ export interface ProductQuery {
 export interface ProductUpdate {
   product_id: number;
   product_name?: string;
-  rate?: number | null;
+  rating?: number | null;
   sold?: number | null;
   price?: number;
   stock?: number;

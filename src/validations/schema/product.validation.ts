@@ -42,7 +42,7 @@ export class ProductValidation {
     .object({
       product_id: z.number().min(1).int(),
       product_name: z.string().trim().min(3).max(100).regex(this.pattern).optional(),
-      rate: z.number().max(5).nullable().optional(),
+      rating: z.number().max(5).nullable().optional(),
       sold: z.number().nullable().optional(),
       price: z.number().min(1000).max(15000000).optional(),
       stock: z.number().max(15000000).int().optional(),

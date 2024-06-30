@@ -53,6 +53,43 @@ export class ProductSubModel {
     await client.query(query, [...field_values, product_id]);
   }
 
+  static async updateRatingAndSold(
+    client: PoolClient,
+    current_rating: number | null,
+    current_sold: number | null,
+    data: any
+  ) {
+    const new_sold = (current_sold || 0) + data.quantity;
+
+    let rating: number;
+
+    if (current_sold) {
+      rating =
+        current_sold * (current_rating || 0) +
+        (data.quantity * data.rating) / new_sold;
+    } else {
+      rating = data.rating;
+    }
+
+    const query = `
+    UPDATE 
+        products
+    SET
+        sold = $1, rating = $2, updated_at = now()
+    WHERE
+        product_id = $3
+    RETURNING *;
+    `;
+
+    const result = await client.query(query, [
+      new_sold,
+      rating,
+      data.product_id,
+    ]);
+
+    return result.rows[0] as Product;
+  }
+
   static async upsert(client: PoolClient, product: Product) {
     const field_names = SqlHelper.getFieldNames(product);
     const field_values = SqlHelper.getFieldValues(product);

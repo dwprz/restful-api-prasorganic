@@ -12,14 +12,14 @@ export class CartModelModify {
       const field_values = SqlHelper.getFieldValues(data);
 
       let query = `
-              INSERT INTO 
-                  carts(${field_names}) 
-              VALUES 
-                  (${parametized_queries}) 
-              ON CONFLICT
-                  (user_id, product_id) DO NOTHING
-              RETURNING *;
-              `;
+        INSERT INTO 
+            carts(${field_names}) 
+        VALUES 
+            (${parametized_queries}) 
+        ON CONFLICT
+            (user_id, product_id) DO NOTHING
+        RETURNING *;
+        `;
 
       let result = await client.query(query, field_values);
       const cart_item = result.rows[0];
@@ -29,14 +29,14 @@ export class CartModelModify {
       }
 
       query = `
-          SELECT 
-              product_name, image, rate, sold, price, stock, length, width, height, weight,
-              description, created_at, updated_at
-          FROM
-              products 
-          WHERE
-              product_id = ${data.product_id};
-          `;
+        SELECT 
+            product_name, image, rating, sold, price, stock, length, width, height, weight,
+            description, created_at, updated_at
+        FROM
+            products 
+        WHERE
+            product_id = ${data.product_id};
+        `;
 
       result = await client.query(query);
       const product = result.rows[0];

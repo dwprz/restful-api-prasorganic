@@ -6,6 +6,7 @@ public
 
 .env
 dummy.*
+dummy*.*
 postgresql.conf
 redis.conf
 ngrok.yaml

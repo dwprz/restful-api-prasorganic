@@ -73,3 +73,26 @@ DELETE FROM deleted_products;
 DELETE FROM categories_on_products;
 DELETE FROM categories;
 DELETE FROM products;
+
+      WITH cte_product AS (
+        SELECT product_id FROM products WHERE product_name = 'abc'
+        )
+        SELECT 
+            r.*, p.product_name, p.is_top_product, p.image AS product_image
+        FROM 
+            reviews AS r
+        INNER JOIN
+            products AS p ON r.product_id = p.product_id
+        WHERE
+            r.product_id = (SELECT cte_product.product_id FROM cte_product)
+        LIMIT 20 OFFSET 0;
+
+      WITH cte_order AS (
+        SELECT * FROM orders WHERE order_id = 'abc'
+      ),
+      cte_products_order AS (
+        SELECT * FROM products_orders WHERE order_id = 'abc'
+      )
+      SELECT
+        (SELECT json_agg(row_to_json(cte_order.*)) FROM cte_order) AS order,
+        (SELECT json_agg(row_to_json(cte_products_order.*)) FROM cte_products_order) AS products;

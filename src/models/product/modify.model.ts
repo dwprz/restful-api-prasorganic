@@ -98,8 +98,8 @@ export class ProductModelModify {
     try {
       await client.query("BEGIN TRANSACTION;");
 
-      if (fields.stock || fields.rate) {
-        const query = `SELECT stock, rate FROM products WHERE product_id = $1 FOR UPDATE;`;
+      if (fields.stock) {
+        const query = `SELECT stock FROM products WHERE product_id = $1 FOR UPDATE;`;
 
         await client.query(query, [product_id]);
       }

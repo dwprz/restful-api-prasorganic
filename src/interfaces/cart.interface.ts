@@ -22,7 +22,7 @@ export interface CartDetails {
     product_id: number;
     product_name: string;
     image: string | null;
-    rate: number | null;
+    rating: number | null;
     sold: number | null;
     price: number;
     stock: number;
@@ -56,7 +56,7 @@ export interface CartOutput {
   product_id: number;
   product_name: string;
   image: string;
-  rate: number | null;
+  rating: number | null;
   sold: number | null;
   price: number;
   total_gross_price: number;

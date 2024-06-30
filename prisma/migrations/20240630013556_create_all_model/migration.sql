@@ -33,7 +33,7 @@ CREATE TABLE "products" (
     "product_id" SERIAL NOT NULL,
     "product_name" VARCHAR(100) NOT NULL,
     "image" VARCHAR(300) NOT NULL,
-    "rate" INTEGER,
+    "rating" REAL,
     "sold" INTEGER,
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE "deleted_products" (
     "product_id" INTEGER NOT NULL,
     "product_name" VARCHAR(100) NOT NULL,
     "image" VARCHAR(300) NOT NULL,
-    "rate" INTEGER,
+    "rating" REAL,
     "sold" INTEGER,
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
@@ -182,6 +182,18 @@ CREATE TABLE "products_orders" (
     CONSTRAINT "products_orders_pkey" PRIMARY KEY ("product_order_id")
 );
 
+-- CreateTable
+CREATE TABLE "reviews" (
+    "user_id" INTEGER NOT NULL,
+    "product_id" INTEGER NOT NULL,
+    "rating" INTEGER NOT NULL,
+    "review" TEXT,
+    "is_highlight" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "reviews_pkey" PRIMARY KEY ("user_id","product_id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -205,6 +217,9 @@ CREATE UNIQUE INDEX "categories_category_name_key" ON "categories"("category_nam
 
 -- CreateIndex
 CREATE UNIQUE INDEX "carts_user_id_product_id_key" ON "carts"("user_id", "product_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "reviews_product_id_key" ON "reviews"("product_id");
 
 -- AddForeignKey
 ALTER TABLE "categories_on_products" ADD CONSTRAINT "categories_on_products_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("product_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -232,3 +247,9 @@ ALTER TABLE "orders" ADD CONSTRAINT "orders_user_id_fkey" FOREIGN KEY ("user_id"
 
 -- AddForeignKey
 ALTER TABLE "products_orders" ADD CONSTRAINT "products_orders_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "orders"("order_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("product_id") ON DELETE RESTRICT ON UPDATE CASCADE;

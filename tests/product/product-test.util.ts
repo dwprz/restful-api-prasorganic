@@ -3,7 +3,7 @@ import { SqlHelper } from "../../src/helpers/sql.helper";
 import { Product } from "../../src/interfaces/product.interface";
 
 export class ProductTestUtil {
-  private static product = {
+  static product = {
     product_name: "PRODUCT TEST",
     image: "IMAGE TEST",
     price: 20000,
@@ -15,7 +15,7 @@ export class ProductTestUtil {
     description: "DESCRIPTION TEST",
   };
 
-  private static categories = ["category1", "category2", "category3"];
+  static categories = ["category1", "category2", "category3"];
 
   static async createWithCategories() {
     const client = await pool.connect();

@@ -22,7 +22,7 @@ export class OrderModelRetrieve {
       )
       SELECT
         (SELECT json_agg(row_to_json(cte_order.*)) FROM cte_order) AS order,
-        (SELECT json_agg(row_to_json(cte_products_order)) FROM cte_products_order) AS products;
+        (SELECT json_agg(row_to_json(cte_products_order.*)) FROM cte_products_order) AS products;
       `;
 
       const result = await client.query(query, [order_id]);

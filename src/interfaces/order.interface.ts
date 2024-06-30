@@ -36,8 +36,8 @@ export interface Order {
   province: string;
   whatsapp: string;
 
-  created_at?: Date;
-  updated_at?: Date | null;
+  created_at?: string;
+  updated_at?: string | null;
 }
 
 export interface OrderWithProducts {

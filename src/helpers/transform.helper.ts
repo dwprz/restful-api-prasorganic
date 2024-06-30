@@ -106,7 +106,7 @@ export class TransformHelper {
             product_id: item.product_id,
             product_name: item.product_name,
             image: item.image,
-            rate: item.rate,
+            rating: item.rating,
             sold: item.sold,
             price: item.price,
             stock: item.stock,

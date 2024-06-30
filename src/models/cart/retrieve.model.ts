@@ -16,7 +16,7 @@ export class CartModelRetrieve {
         LIMIT ${limit} OFFSET ${offset}
       )
       SELECT 
-          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.length, p.width, p.height, 
+          c.*, p.product_name, p.image, p.rating, p.sold, p.price, p.stock, p.length, p.width, p.height, 
           p.weight, p.description, p.created_at, p.updated_at, u.email, u.photo_profile, u.role 
       FROM 
           products AS p
@@ -45,7 +45,7 @@ export class CartModelRetrieve {
     try {
       let query = `
       SELECT 
-          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.length, p.width, p.height,
+          c.*, p.product_name, p.image, p.rating, p.sold, p.price, p.stock, p.length, p.width, p.height,
           p.weight, p.description, p.created_at, p.updated_at
       FROM 
           products AS p 
@@ -88,7 +88,7 @@ export class CartModelRetrieve {
         LIMIT ${limit} OFFSET ${offset}
       )
       SELECT 
-          c.*, p.product_name, p.image, p.rate, p.sold, p.price, p.stock, p.length, p.width, p.height,
+          c.*, p.product_name, p.image, p.rating, p.sold, p.price, p.stock, p.length, p.width, p.height,
           p.weight, p.description, p.created_at, p.updated_at, u.email, u.photo_profile, u.role 
       FROM 
           products AS p
