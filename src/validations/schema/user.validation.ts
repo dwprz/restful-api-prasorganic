@@ -3,7 +3,7 @@ import z, { ZodType } from "zod";
 export class UserValidation {
   private static pattern = /^[^<>/()#=|&!?:;${}]*$/;
 
-  static email: ZodType = z.string().min(5).max(100).regex(this.pattern);
+  static user_id: ZodType = z.number().int();
 
   static getByRole: ZodType = z.object({
     page: z.number().min(1).max(100).int(),

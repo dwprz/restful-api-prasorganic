@@ -1,11 +1,32 @@
 import pool from "../../apps/postgresql.app";
 import ErrorResponse from "../../errors/response.error";
-import { User } from "../../interfaces/user.interface";
+import { User, UserSanitized } from "../../interfaces/user.interface";
 import { UserHelper } from "../../helpers/user.helper";
 import { SqlHelper } from "../../helpers/sql.helper";
 import { ErrorHelper } from "../../helpers/error.helper";
+import { UserCache } from "../../cache/user.cache";
 
 export class UserModelRetrieve {
+  static async findAndSanitize(user_id: number) {
+    const client = await pool.connect();
+    try {
+      const query = `
+      SELECT * FROM users WHERE user_id = $1;
+      `;
+
+      const result = await client.query(query, [user_id]);
+      const { password, refresh_token, ...user } = result.rows[0];
+
+      await UserCache.cache(user);
+
+      return user as UserSanitized;
+    } catch (error) {
+      throw ErrorHelper.catch("find and sanitize user", error);
+    } finally {
+      client.release();
+    }
+  }
+
   static async findByFields(fields: Record<string, any>) {
     const client = await pool.connect();
 

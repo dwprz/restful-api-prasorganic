@@ -73,19 +73,19 @@ export interface UserAutnenticate {
   password: string;
 }
 
-export interface UserOutput {
+export interface UserSanitized {
   user_id: number;
   email: string;
   full_name: string;
   role: UserRole;
-  photo_profile?: string | null;
+  photo_profile: string | null;
   whatsapp: string | null;
   created_at: Date;
   updated_at: Date;
 }
 
 export interface UserWithTokens {
-  user: UserOutput;
+  user: UserSanitized;
   tokens: Tokens;
 }
 

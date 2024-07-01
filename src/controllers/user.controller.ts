@@ -2,13 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import { UserRequest, UserRole } from "../interfaces/user.interface";
 import { UserService } from "../services/user.service";
 import { FileHelper } from "../helpers/file.helper";
+import { UserCache } from "../cache/user.cache";
 
 export class UserController {
   static async getCurrent(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = (req as UserRequest).user_data;
-      const result = await UserService.getByEmail(email);
-      res.status(200).json({ data: result });
+      const { user_id } = (req as UserRequest).user_data;
+
+      let user = await UserCache.findById(user_id);
+
+      if (!user) {
+        user = await UserService.getById(user_id);
+      }
+
+      res.status(200).json({ data: user });
     } catch (error) {
       next(error);
     }

@@ -1,9 +1,15 @@
 import { DatabaseError } from "pg";
 import pool from "../../apps/postgresql.app";
-import { User, UserLoginWithGoogle, UserRegister } from "../../interfaces/user.interface";
+import {
+  User,
+  UserLoginWithGoogle,
+  UserRegister,
+  UserSanitized,
+} from "../../interfaces/user.interface";
 import ErrorResponse from "../../errors/response.error";
 import { ErrorHelper } from "../../helpers/error.helper";
 import { SqlHelper } from "../../helpers/sql.helper";
+import { UserCache } from "../../cache/user.cache";
 
 export class UserModelModify {
   static async create({ email, full_name, password }: UserRegister) {
@@ -38,6 +44,8 @@ export class UserModelModify {
     const client = await pool.connect();
 
     try {
+      await client.query("BEGIN TRANSACTION;");
+
       const field_values = SqlHelper.getFieldValues(fields);
       const set_clause = SqlHelper.buildSetClause(fields);
 
@@ -53,10 +61,14 @@ export class UserModelModify {
       `;
 
       const result = await client.query(query, [...field_values, email]);
+      await UserCache.cache(result.rows[0]);
 
-      const { password, refresh_token, ...user } = result.rows[0] as User;
-      return user;
+      await client.query("COMMIT TRANSACTION;");
+
+      return result.rows[0] as UserSanitized;
     } catch (error) {
+      await client.query("ROLLBACK TRANSACTION;");
+
       if (error instanceof DatabaseError && error.code === "23505") {
         throw new ErrorResponse(409, "email already exists");
       }
@@ -71,6 +83,8 @@ export class UserModelModify {
     const client = await pool.connect();
 
     try {
+      await client.query("BEGIN TRANSACTION;");
+
       const query = `
       INSERT INTO 
           users (email, full_name, photo_profile, role, created_at)
@@ -80,7 +94,7 @@ export class UserModelModify {
           (email)
       DO UPDATE SET
           full_name = $2, updated_at = now()
-      RETURNING
+      RETURNING 
           user_id, email, full_name, role, photo_profile, whatsapp, created_at, updated_at;
       `;
 
@@ -90,9 +104,13 @@ export class UserModelModify {
         data.photo_profile,
       ]);
 
-      const { password, refresh_token, ...user } = result.rows[0] as User;
-      return user;
+      await UserCache.cache(result.rows[0]);
+      
+      await client.query("COMMIT TRANSACTION;");
+
+      return result.rows[0] as UserSanitized;
     } catch (error) {
+      await client.query("ROLLBACK TRANSACTION;");
       throw ErrorHelper.catch("upsert user by email", error);
     } finally {
       client.release();

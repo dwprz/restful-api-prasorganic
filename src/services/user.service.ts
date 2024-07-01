@@ -20,14 +20,10 @@ import { AuthService } from "./auth.service";
 import bcrypt from "bcrypt";
 
 export class UserService {
-  static async getByEmail(email: string) {
-    email = validation(UserValidation.email, email);
+  static async getById(user_id: number) {
+    validation(UserValidation.user_id, user_id);
 
-    const { password, refresh_token, ...user } =
-      await UserModelRetrieve.findByFields({
-        email,
-      });
-
+    const user = await UserModelRetrieve.findAndSanitize(user_id);
     return user;
   }
 
