@@ -1,36 +1,41 @@
-import pool from "../../src/apps/postgresql.app";
-import { SqlHelper } from "../../src/helpers/sql.helper";
+import pool from "../../../src/apps/postgresql.app";
+import { SqlHelper } from "../../../src/helpers/sql.helper";
 
-export class AddressTestUtil {
-  private static address = {
-    address_owner: "NAME TEST",
-    street: "STREET TEST",
-    area_id: 14223,
-    area: "Ngagel",
-    lat: "-6.4912716",
-    lng: "111.0370989",
-    suburb_id: 1415,
-    suburb: "Dukuhseti",
-    city_id: 85,
-    city: "Pati",
-    province_id: 10,
-    province: "Jawa Tengah",
-    whatsapp: "08123456789",
-    is_main_address: true,
-  };
+export class AddressTestModel {
+  static createInstance() {
+    return {
+      address_owner: "NAME TEST",
+      street: "STREET TEST",
+      area_id: 14223,
+      area: "Ngagel",
+      lat: "-6.4912716",
+      lng: "111.0370989",
+      suburb_id: 1415,
+      suburb: "Dukuhseti",
+      city_id: 85,
+      city: "Pati",
+      province_id: 10,
+      province: "Jawa Tengah",
+      whatsapp: "08123456789",
+      is_main_address: true,
+    };
+  }
 
   static async create(user_id: number) {
     const client = await pool.connect();
     try {
-      const field_names = SqlHelper.getFieldNames({ ...this.address, user_id });
+      const field_names = SqlHelper.getFieldNames({
+        ...this.createInstance(),
+        user_id,
+      });
 
       const parameterized_queries = SqlHelper.buildParameterizedQueries({
-        ...this.address,
+        ...this.createInstance(),
         user_id,
       });
 
       const field_values = SqlHelper.getFieldValues({
-        ...this.address,
+        ...this.createInstance(),
         user_id,
       });
 
@@ -47,7 +52,7 @@ export class AddressTestUtil {
 
       return address;
     } catch (error: any) {
-      console.log("error address util test create: ", error.message);
+      console.log("address test model create: ", error.message);
     } finally {
       client.release();
     }
@@ -59,7 +64,7 @@ export class AddressTestUtil {
     for (let index = 0; index < 5; index++) {
       const address = {
         user_id: user_id,
-        ...this.address,
+        ...this.createInstance(),
         address_owner: "NAME TEST" + ` ${index}`,
         is_main_address: false,
       };
@@ -96,7 +101,7 @@ export class AddressTestUtil {
 
       return addresses_result;
     } catch (error: any) {
-      console.log("error address util test create many: ", error.message);
+      console.log("address test model create many: ", error.message);
     } finally {
       client.release();
     }
@@ -109,7 +114,7 @@ export class AddressTestUtil {
 
       await client.query(query);
     } catch (error: any) {
-      console.log("error address util test delete: ", error.message);
+      console.log("address model test delete: ", error.message);
     } finally {
       client.release();
     }

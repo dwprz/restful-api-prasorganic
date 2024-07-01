@@ -36,4 +36,19 @@ export class ProductTestSubModel {
       throw new Error(`product test sub model delete: ${error.message}`);
     }
   }
+
+  static async deleteMany(client: PoolClient, product_ids: number[]) {
+    try {
+      const parameterized_queries =
+        SqlHelper.buildParameterizedQueries(product_ids);
+
+      const query = `
+      DELETE FROM products WHERE product_id IN (${parameterized_queries});
+      `;
+
+      await client.query(query, product_ids);
+    } catch (error) {
+      throw new Error(`product test sub model delete many: ${error.message}`);
+    }
+  }
 }

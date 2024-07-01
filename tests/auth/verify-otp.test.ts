@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
-import { AuthTestUtil } from "./auth-test.util";
+import { OtpTestModel } from "../models/otp/otp.test.model";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import {
@@ -16,11 +16,11 @@ describe("POST /api/users/current/otp/verify", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeEach(async () => {
-    await AuthTestUtil.upsertOtpByEmail(email, otp);
+    await OtpTestModel.upsertByEmail(email, otp);
   });
 
   afterAll(async () => {
-    await AuthTestUtil.deleteOtpByEmail(email);
+    await OtpTestModel.deleteByEmail(email);
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

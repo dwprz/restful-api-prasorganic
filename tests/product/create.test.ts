@@ -1,14 +1,15 @@
 import supertest from "supertest";
-import { ProductTestUtil } from "./product-test.util";
 import app from "../../src/apps/application.app";
 import "dotenv/config";
-import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { ProductTestModel } from "../models/product/product.test.model";
+import { SuperAdminTestModel } from "../models/user/super-admin.test.model";
+import { AdminTestModel } from "../models/user/admin.test.model";
 
 // npx jest tests/product/create.test.ts
 
@@ -24,24 +25,25 @@ describe("POST /api/products", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const super_admin = await UserTestUtil.createSuperAdmin();
+    const super_admin = await SuperAdminTestModel.create();
     super_admin_email = super_admin!.email;
     super_admin_password = super_admin!.password;
 
-    const admin = await UserTestUtil.createAdmin();
+    const admin = await AdminTestModel.create();
     admin_email = admin!.email;
     admin_password = admin!.password;
   });
 
   afterEach(async () => {
     if (product_id) {
-      await ProductTestUtil.deleteWithCategories(product_id);
+      await ProductTestModel.delete(product_id);
     }
   });
 
   afterAll(async () => {
-    await UserTestUtil.deleteSuperAdmin();
-    await UserTestUtil.deleteAdmin();
+    await SuperAdminTestModel.delete();
+    await AdminTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
@@ -82,7 +84,7 @@ describe("POST /api/products", () => {
     expect(result.status).toBe(201);
     expect(result.body.data).toBeDefined();
 
-    product_id = result.body.data?.product_id || undefined;
+    product_id = result.body.data?.product_id;
   });
 
   it("create product with one category should be successful", async () => {
@@ -114,7 +116,7 @@ describe("POST /api/products", () => {
     expect(result.status).toBe(201);
     expect(result.body.data).toBeDefined();
 
-    product_id = result.body.data?.product_id || undefined;
+    product_id = result.body.data?.product_id;
   });
 
   it("create product should fail if image file is invalid", async () => {
@@ -146,7 +148,7 @@ describe("POST /api/products", () => {
     expect(result.status).toBe(400);
     expect(result.body.error).toBeDefined();
 
-    product_id = result.body.data?.product_id || undefined;
+    product_id = result.body.data?.product_id;
   });
 
   it("create product should fail if file size is more than 1mb", async () => {
@@ -178,7 +180,7 @@ describe("POST /api/products", () => {
     expect(result.status).toBe(400);
     expect(result.body.error).toBeDefined();
 
-    product_id = result.body.data?.product_id || undefined;
+    product_id = result.body.data?.product_id;
   });
 
   it("create product should fail if not super admin", async () => {
@@ -212,7 +214,7 @@ describe("POST /api/products", () => {
     expect(result.status).toBe(403);
     expect(result.body.error).toBeDefined();
 
-    product_id = result.body.data?.product_id || undefined;
+    product_id = result.body.data?.product_id;
   });
 
   it("create product should fail if without authorization header", async () => {
@@ -245,6 +247,6 @@ describe("POST /api/products", () => {
     expect(result.status).toBe(401);
     expect(result.body.error).toBeDefined();
 
-    product_id = result.body.data?.product_id || undefined;
+    product_id = result.body.data?.product_id;
   });
 });

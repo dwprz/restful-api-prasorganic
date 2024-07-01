@@ -1,28 +1,28 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import "dotenv/config";
-import { ProductTestUtil } from "./product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { ProductTestModel } from "../models/product/product.test.model";
 
 // npx jest tests/product/get-top.test.ts
 
 describe("GET /api/top-products", () => {
-  let products_ids: number[];
+  let product_id: number;
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const products = await ProductTestUtil.createManyTopProducts();
-    products_ids = products?.map(({ product_id }) => product_id)!;
+    const products = await ProductTestModel.createTopProduct();
+    product_id = products!.product_id;
   });
 
   afterAll(async () => {
-    await ProductTestUtil.deleteManyWithCategories(products_ids);
+    await ProductTestModel.delete(product_id);
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

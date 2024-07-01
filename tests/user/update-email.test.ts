@@ -1,13 +1,13 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
-import { UserTestUtil } from "./user-test.util";
-import { AuthTestUtil } from "../auth/auth-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { UserTestModel } from "../models/user/user.test.model";
+import { OtpTestModel } from "../models/otp/otp.test.model";
 
 // npx jest tests/user/update-email.test.ts
 
@@ -20,19 +20,20 @@ describe("PATCH /api/users/current/email", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_email = user!.email;
     new_user_email = "new" + user!.email;
     user_password = user!.password;
   });
 
   beforeEach(async () => {
-    await AuthTestUtil.upsertOtpByEmail(new_user_email, otp);
+    await OtpTestModel.upsertByEmail(new_user_email, otp);
   });
 
   afterAll(async () => {
-    await AuthTestUtil.deleteOtpByEmail(new_user_email);
-    await UserTestUtil.deleteUser();
+    await OtpTestModel.deleteByEmail(new_user_email);
+    await UserTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

@@ -28,7 +28,7 @@ export class SuperAdminTestModel {
 
       return { ...super_admin, password: this.super_admin.password };
     } catch (error) {
-      console.log("super admin test model create: ", error);
+      console.log("super admin test model create: ", error.message);
     } finally {
       client.release();
     }
@@ -52,7 +52,7 @@ export class SuperAdminTestModel {
 
       await client.query(query);
     } catch (error) {
-      console.log("super admin test model delete: ", error);
+      console.log("super admin test model delete: ", error.message);
     } finally {
       client.release();
     }

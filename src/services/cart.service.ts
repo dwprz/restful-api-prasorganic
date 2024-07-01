@@ -5,6 +5,7 @@ import {
   CartDelete,
   CartInput,
 } from "../interfaces/cart.interface";
+import { CartModelCount } from "../models/cart/count.model";
 import { CartModelModify } from "../models/cart/modify.model";
 import { CartModelRetrieve } from "../models/cart/retrieve.model";
 import { CartValidation } from "../validations/schema/cart.validation";
@@ -14,7 +15,7 @@ export class CartService {
   static async create(data: CartInput) {
     validation(CartValidation.create, data);
 
-    const total_cart_items = await CartModelRetrieve.countByFields({
+    const total_cart_items = await CartModelCount.countByFields({
       user_id: data.user_id,
     });
 
@@ -33,7 +34,7 @@ export class CartService {
 
     const carts = await CartModelRetrieve.findMany(limit, offset);
 
-    const total_cart_items = await CartModelRetrieve.count();
+    const total_cart_items = await CartModelCount.count();
 
     const result = PagingHelper.formatPagedData(
       carts,
@@ -63,7 +64,7 @@ export class CartService {
       offset
     );
 
-    const total_cart_items = await CartModelRetrieve.countByProductName(
+    const total_cart_items = await CartModelCount.countByProductName(
       data.product_name
     );
 

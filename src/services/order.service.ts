@@ -2,6 +2,7 @@ import { OrderCache } from "../cache/order.cache";
 import ErrorResponse from "../errors/response.error";
 import { PagingHelper } from "../helpers/paging.helper";
 import { OrderStatus, OrderWithProducts } from "../interfaces/order.interface";
+import { OrderModelCount } from "../models/order/count.model";
 import { OrderModelModify } from "../models/order/modify.model";
 import { OrderModelRetrieve } from "../models/order/retrieve.model";
 import { OrderValidation } from "../validations/schema/order.validation";
@@ -34,7 +35,7 @@ export class OrderService {
       offset
     );
 
-    const total_orders = await OrderModelRetrieve.countByFields({ user_id });
+    const total_orders = await OrderModelCount.countByFields({ user_id });
 
     const result = PagingHelper.formatPagedData(
       orders,
@@ -57,7 +58,7 @@ export class OrderService {
     if (!status) {
       orders = await OrderModelRetrieve.findMany(limit, offset);
 
-      total_orders = await OrderModelRetrieve.count();
+      total_orders = await OrderModelCount.count();
     } else {
       orders = await OrderModelRetrieve.findManyByStatus(
         status!,
@@ -65,7 +66,7 @@ export class OrderService {
         offset
       );
 
-      total_orders = await OrderModelRetrieve.countByFields({ status });
+      total_orders = await OrderModelCount.countByFields({ status });
     }
 
     const result = PagingHelper.formatPagedData(

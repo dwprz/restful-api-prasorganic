@@ -28,7 +28,7 @@ export class AdminTestModel {
 
       return { ...admin, password: this.admin.password };
     } catch (error) {
-      console.log("admin test model create: ", error);
+      console.log("admin test model create: ", error.message);
     } finally {
       client.release();
     }
@@ -52,7 +52,7 @@ export class AdminTestModel {
 
       await client.query(query);
     } catch (error) {
-      console.log("admin test model delete: ", error);
+      console.log("admin test model delete: ", error.message);
     } finally {
       client.release();
     }

@@ -1,13 +1,15 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
-import { ProductTestUtil } from "./product-test.util";
-import { UserTestUtil } from "../user/user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { SuperAdminTestModel } from "../models/user/super-admin.test.model";
+import { AdminTestModel } from "../models/user/admin.test.model";
+import { ProductTestModel } from "../models/product/product.test.model";
+import { DeletedProductTestModel } from "../models/deleted-product/deleted-product.test.model";
 
 // npx jest tests/product/delete.test.ts
 
@@ -23,23 +25,24 @@ describe("DELETE /api/products/:productId", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const super_admin = await UserTestUtil.createSuperAdmin();
+    const super_admin = await SuperAdminTestModel.create();
     super_admin_email = super_admin?.email!;
     super_admin_password = super_admin?.password!;
 
-    const admin = await UserTestUtil.createAdmin();
+    const admin = await AdminTestModel.create();
     admin_email = admin?.email!;
     admin_password = admin?.password!;
   });
 
   beforeEach(async () => {
-    const product = await ProductTestUtil.createWithCategories();
+    const product = await ProductTestModel.create();
     product_id = product?.product_id!;
   });
 
   afterAll(async () => {
-    await UserTestUtil.deleteSuperAdmin();
-    await UserTestUtil.deleteAdmin();
+    await SuperAdminTestModel.delete();
+    await AdminTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
@@ -50,7 +53,8 @@ describe("DELETE /api/products/:productId", () => {
   });
 
   afterEach(async () => {
-    await ProductTestUtil.deleteWithCategories(product_id);
+    await DeletedProductTestModel.delete(product_id);
+    await ProductTestModel.delete(product_id);
   });
 
   it("delete product should be successful", async () => {

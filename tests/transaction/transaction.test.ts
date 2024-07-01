@@ -1,14 +1,14 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
-import { UserTestUtil } from "../user/user-test.util";
-import { ProductTestUtil } from "../product/product-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import { OrderTestUtil } from "../order/order-test.util";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { UserTestModel } from "../models/user/user.test.model";
+import { ProductTestModel } from "../models/product/product.test.model";
+import { OrderTestModel } from "../models/order/order.test.model";
 
 // npx jest tests/transaction/transaction.test.ts
 
@@ -28,12 +28,12 @@ describe("POST /api/transactions", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_email = user!.email;
     user_password = user!.password;
     user_fullname = user!.full_name;
 
-    const product = await ProductTestUtil.createWithCategories();
+    const product = await ProductTestModel.create();
     product_id = product!.product_id;
     product_name = product!.product_name;
     product_image = product!.image;
@@ -42,13 +42,14 @@ describe("POST /api/transactions", () => {
 
   afterEach(async () => {
     if (order_id) {
-      await OrderTestUtil.delete(order_id);
+      await OrderTestModel.delete(order_id);
     }
   });
 
   afterAll(async () => {
-    await ProductTestUtil.deleteWithCategories(product_id);
-    await UserTestUtil.deleteUser();
+    await ProductTestModel.delete(product_id);
+    await UserTestModel.delete();
+    
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

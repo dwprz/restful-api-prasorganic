@@ -1,13 +1,13 @@
 import supertest from "supertest";
-import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
-import { AddressTestUtil } from "./address-test.util";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { UserTestModel } from "../models/user/user.test.model";
+import { AddressTestModel } from "../models/address/address.test.model";
 
 // npx jest tests/address/create.test.ts
 
@@ -19,15 +19,15 @@ describe("POST /api/addresses", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_id = user!.user_id;
     user_email = user!.email;
     user_password = user!.password;
   });
 
   afterAll(async () => {
-    await AddressTestUtil.delete(user_id);
-    await UserTestUtil.deleteUser();
+    await AddressTestModel.delete(user_id);
+    await UserTestModel.delete();
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

@@ -1,12 +1,12 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
-import { UserTestUtil } from "../user/user-test.util";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { UserTestModel } from "../models/user/user.test.model";
 
 // npx jest tests/auth/logout.test.ts
 
@@ -16,13 +16,13 @@ describe("PATCH /api/users/current/logout", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_email = user!.email;
     user_password = user!.password;
   });
 
   afterAll(async () => {
-    await UserTestUtil.deleteUser();
+    await UserTestModel.delete();
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

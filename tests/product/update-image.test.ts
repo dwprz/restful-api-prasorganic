@@ -1,7 +1,5 @@
 import supertest from "supertest";
-import { ProductTestUtil } from "./product-test.util";
 import app from "../../src/apps/application.app";
-import { UserTestUtil } from "../user/user-test.util";
 import "dotenv/config";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
@@ -9,6 +7,9 @@ import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { SuperAdminTestModel } from "../models/user/super-admin.test.model";
+import { AdminTestModel } from "../models/user/admin.test.model";
+import { ProductTestModel } from "../models/product/product.test.model";
 
 // npx jest tests/product/update-image.test.ts
 
@@ -24,22 +25,23 @@ describe("PATCH /api/products/:productId/image", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const super_admin = await UserTestUtil.createSuperAdmin();
+    const super_admin = await SuperAdminTestModel.create();
     super_admin_email = super_admin?.email!;
     super_admin_password = super_admin?.password!;
 
-    const admin = await UserTestUtil.createAdmin();
+    const admin = await AdminTestModel.create();
     admin_email = admin?.email!;
     admin_password = admin?.password!;
 
-    const product = await ProductTestUtil.createWithCategories();
+    const product = await ProductTestModel.create();
     product_id = product?.product_id!;
   });
 
   afterAll(async () => {
-    await ProductTestUtil.deleteWithCategories(product_id);
-    await UserTestUtil.deleteSuperAdmin();
-    await UserTestUtil.deleteAdmin();
+    await ProductTestModel.delete(product_id);
+    await SuperAdminTestModel.delete();
+    await AdminTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

@@ -18,7 +18,7 @@ export class ReviewTestModel {
 
       await ReviewTestSubModel.insert(client, review);
     } catch (error) {
-      console.log("review test model create", error);
+      console.log("review test model create", error.message);
     } finally {
       client.release();
     }
@@ -34,7 +34,7 @@ export class ReviewTestModel {
         is_highlight: true,
       });
     } catch (error) {
-      console.log("review test model create", error);
+      console.log("review test model create", error.message);
     } finally {
       client.release();
     }
@@ -49,7 +49,7 @@ export class ReviewTestModel {
 
       await client.query(query, [user_id, product_id]);
     } catch (error) {
-      console.log("review test model delete", error);
+      console.log("review test model delete", error.message);
     } finally {
       client.release();
     }

@@ -10,11 +10,11 @@ import validation from "../validations/validation";
 import { ProductModelRetrieve } from "../models/product/retrieve.model";
 import { PagingHelper } from "../helpers/paging.helper";
 import { FileHelper } from "../helpers/file.helper";
-import { CategoryModelModify } from "../models/category/modify.model";
 import ErrorResponse from "../errors/response.error";
 import { ProductOrderModelRetrieve } from "../models/product-order/retrieve.model";
 import { OrderCache } from "../cache/order.cache";
 import { ProductModelModify } from "../models/product/modify.model";
+import { ProductModelCount } from "../models/product/count.model";
 
 export class ProductService {
   static async create(data: ProductWithCategoriesInput) {
@@ -39,7 +39,7 @@ export class ProductService {
 
     const products = await ProductModelRetrieve.findManyRandom(limit, offset);
 
-    const total_products = await ProductModelRetrieve.count();
+    const total_products = await ProductModelCount.count();
 
     const result = PagingHelper.formatPagedData(
       products,
@@ -61,7 +61,8 @@ export class ProductService {
       limit,
       offset
     );
-    const total_products = await ProductModelRetrieve.countByName(name!);
+
+    const total_products = await ProductModelCount.countByName(name!);
 
     const result = PagingHelper.formatPagedData(
       products,
@@ -97,7 +98,7 @@ export class ProductService {
       offset
     );
 
-    const total_products = await ProductModelRetrieve.countByCategories(
+    const total_products = await ProductModelCount.countByCategories(
       categories!
     );
 
@@ -121,7 +122,7 @@ export class ProductService {
       offset
     );
 
-    const total_products = await ProductModelRetrieve.count();
+    const total_products = await ProductModelCount.count();
 
     const result = PagingHelper.formatPagedData(
       products,
@@ -148,7 +149,7 @@ export class ProductService {
         offset
       );
 
-    const total_products = await ProductModelRetrieve.countByCategories(
+    const total_products = await ProductModelCount.countByCategories(
       categories!
     );
 
@@ -162,39 +163,14 @@ export class ProductService {
     return result;
   }
 
-  static async getDeleted(page: number) {
-    validation(ProductValidation.page, page);
-
-    const { limit, offset } = PagingHelper.createLimitAndOffset(page);
-
-    const products = await ProductModelRetrieve.findManyDeleted(limit, offset);
-    const total_products = await ProductModelRetrieve.countDeleted();
-
-    const result = PagingHelper.formatPagedData(
-      products,
-      total_products,
-      page,
-      limit
-    );
-
-    return result;
-  }
-
-  static async restore(product_id: number) {
-    validation(ProductValidation.ptoduct_id, product_id);
-
-    const product = await ProductModelModify.restore(product_id);
-    return product;
-  }
-
   static async update(data: ProductUpdate) {
     const { product_id, ...product_request } = validation(
       ProductValidation.update,
       data
     );
 
-    if (data.is_top_product) {
-      const total_products = await ProductModelRetrieve.countByFields({
+    if (data.is_top_product === true) {
+      const total_products = await ProductModelCount.countByFields({
         is_top_product: true,
       });
 
@@ -222,21 +198,6 @@ export class ProductService {
 
     const product = await ProductModelModify.updateById(
       { image: new_image },
-      product_id
-    );
-
-    return product;
-  }
-
-  static async updateCategories(data: any) {
-    const { product_id, categories, new_categories } = validation(
-      ProductValidation.updateCategories,
-      data
-    );
-
-    await CategoryModelModify.update(categories, new_categories, product_id);
-
-    const product = await ProductModelRetrieve.findWithCategoriesById(
       product_id
     );
 

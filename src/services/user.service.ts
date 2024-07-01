@@ -11,6 +11,7 @@ import {
   UserUpdatePhotoProfile,
   UserUpdateProfile,
 } from "../interfaces/user.interface";
+import { UserModelCount } from "../models/user/count.model";
 import { UserModelModify } from "../models/user/modify.model";
 import { UserModelRetrieve } from "../models/user/retrieve.model";
 import { UserValidation } from "../validations/schema/user.validation";
@@ -22,9 +23,10 @@ export class UserService {
   static async getByEmail(email: string) {
     email = validation(UserValidation.email, email);
 
-    const { password, refresh_token, ...user } = await UserModelRetrieve.findByFields({
-      email,
-    });
+    const { password, refresh_token, ...user } =
+      await UserModelRetrieve.findByFields({
+        email,
+      });
 
     return user;
   }
@@ -41,7 +43,7 @@ export class UserService {
     );
 
     const users = UserHelper.sanitize(existing_users);
-    const total_users = await UserModelRetrieve.countByFields({ role });
+    const total_users = await UserModelCount.countByFields({ role });
 
     const result = PagingHelper.formatPagedData(
       users,
@@ -68,7 +70,7 @@ export class UserService {
     );
 
     const users = UserHelper.sanitize(existing_users);
-    const total_users = await UserModelRetrieve.countByFields({
+    const total_users = await UserModelCount.countByFields({
       role,
       full_name,
     });
@@ -89,7 +91,9 @@ export class UserService {
       data
     );
 
-    const existing_user = await UserModelRetrieve.findByFields({ email: data.email });
+    const existing_user = await UserModelRetrieve.findByFields({
+      email: data.email,
+    });
 
     if (!existing_user.password) {
       throw new ErrorResponse(400, "the user does not have a password");
@@ -149,7 +153,10 @@ export class UserService {
 
     await AuthService.verifyOtp({ email: new_email, otp: otp });
 
-    const user = await UserModelModify.updateByEmail({ email: new_email }, email);
+    const user = await UserModelModify.updateByEmail(
+      { email: new_email },
+      email
+    );
 
     const access_token = AuthHelper.createAccessToken({
       ...existing_user,

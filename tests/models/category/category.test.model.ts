@@ -1,3 +1,5 @@
 export class CategoryTestModel {
-  static categories = ["category1", "category2", "category3"];
+  static createInstance() {
+    return ["category1", "category2", "category3"];
+  }
 }

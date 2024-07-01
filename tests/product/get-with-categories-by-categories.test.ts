@@ -1,14 +1,15 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import "dotenv/config";
-import { ProductTestUtil } from "./product-test.util";
 import pool from "../../src/apps/postgresql.app";
-import { UserTestUtil } from "../user/user-test.util";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { ProductTestModel } from "../models/product/product.test.model";
+import { AdminTestModel } from "../models/user/admin.test.model";
+import { UserTestModel } from "../models/user/user.test.model";
 
 // npx jest tests/product/get-with-categories-by-categories.test.ts
 
@@ -19,27 +20,28 @@ describe("GET /api/products-with-categories", () => {
   let user_email: string;
   let user_password: string;
 
-  let products_ids: number[];
+  let product_ids: number[];
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const admin = await UserTestUtil.createAdmin();
+    const admin = await AdminTestModel.create();
     admin_email = admin!.email;
     admin_password = admin!.password;
 
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_email = user!.email;
     user_password = user!.password;
 
-    const products = await ProductTestUtil.createManyWithCategories();
-    products_ids = products?.map(({ product_id }) => product_id)!;
+    const products = await ProductTestModel.createMany();
+    product_ids = products?.map(({ product_id }) => product_id)!;
   });
 
   afterAll(async () => {
-    await ProductTestUtil.deleteManyWithCategories(products_ids);
-    await UserTestUtil.deleteAdmin();
-    await UserTestUtil.deleteUser();
+    await ProductTestModel.deleteMany(product_ids);
+    await AdminTestModel.delete();
+    await UserTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

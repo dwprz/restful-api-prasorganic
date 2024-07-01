@@ -1,15 +1,16 @@
 import supertest from "supertest";
-import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import { OrderTestUtil } from "../order/order-test.util";
 import { OrderStatus } from "../../src/interfaces/order.interface";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
+import { OrderTestModel } from "../models/order/order.test.model";
+import { ProductTestModel } from "../models/product/product.test.model";
+import { UserTestModel } from "../models/user/user.test.model";
 
 // npx jest tests/order/get-by-current-user.test.ts
 
@@ -18,24 +19,31 @@ describe("GET /api/orders/users/current", () => {
   let user_email: string;
   let user_password: string;
 
+  let product: any;
+  let product_id: number;
+
   let order_id: string;
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_id = user!.user_id;
     user_email = user!.email;
     user_password = user!.password;
 
-    order_id = nanoid();
+    product = await ProductTestModel.create();
+    product_id = product.product_id;
 
-    await OrderTestUtil.create(user_id, order_id, OrderStatus.PAID);
+    order_id = nanoid();
+    await OrderTestModel.create(user_id, order_id, OrderStatus.PAID, product);
   });
 
   afterAll(async () => {
-    await OrderTestUtil.delete(order_id);
-    await UserTestUtil.deleteUser();
+    await OrderTestModel.delete(order_id);
+    await ProductTestModel.delete(product_id);
+    await UserTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

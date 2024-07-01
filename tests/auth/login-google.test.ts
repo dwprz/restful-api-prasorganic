@@ -1,12 +1,12 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
-import { UserTestUtil } from "../user/user-test.util";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { UserTestModel } from "../models/user/user.test.model";
 
 // npx jest tests/auth/login-google.test.ts
 
@@ -17,7 +17,7 @@ describe("POST /api/users/current/login/google", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   afterEach(async () => {
-    await UserTestUtil.deleteUser();
+    await UserTestModel.delete();
   });
 
   afterAll(async () => {

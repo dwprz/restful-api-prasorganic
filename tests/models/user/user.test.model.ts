@@ -28,8 +28,8 @@ export class UserTestModel {
       const user = result.rows[0] as User;
 
       return { ...user, password: this.user.password };
-    } catch (error: any) {
-      console.log("user test model create: ", error);
+    } catch (error) {
+      console.log("user test model create: ", error.nessage);
     } finally {
       client.release();
     }
@@ -51,7 +51,7 @@ export class UserTestModel {
 
       await client.query(query);
     } catch (error) {
-      console.log("user test model delete: ", error);
+      console.log("user test model delete: ", error.message);
     } finally {
       client.release();
     }

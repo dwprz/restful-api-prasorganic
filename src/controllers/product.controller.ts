@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { RequestHelper } from "../helpers/request.helper";
 import { ProductService } from "../services/product.service";
 import { FileHelper } from "../helpers/file.helper";
+import { DeletedProductService } from "../services/deleted-product.service";
+import { CategoryService } from "../services/category.service";
 
 export class ProductController {
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -78,7 +80,7 @@ export class ProductController {
     try {
       const page = Number(req.query["page"]);
 
-      const { data, paging } = await ProductService.getDeleted(page);
+      const { data, paging } = await DeletedProductService.get(page);
       res.status(200).json({ data, paging });
     } catch (error) {
       next(error);
@@ -89,7 +91,7 @@ export class ProductController {
     try {
       const product_id = Number(req.params["productId"]);
 
-      const result = await ProductService.restore(product_id);
+      const result = await DeletedProductService.restore(product_id);
       res.status(200).json({ data: result });
     } catch (error) {
       next(error);
@@ -131,7 +133,7 @@ export class ProductController {
     try {
       const product_id = Number(req.params["productId"]);
 
-      const result = await ProductService.updateCategories({
+      const result = await CategoryService.update({
         ...req.body,
         product_id,
       });

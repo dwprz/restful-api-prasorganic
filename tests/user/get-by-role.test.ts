@@ -1,12 +1,12 @@
 import supertest from "supertest";
 import app from "../../src/apps/application.app";
-import { UserTestUtil } from "./user-test.util";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
 import {
   orderShippingQueue,
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
+import { AdminTestModel } from "../models/user/admin.test.model";
 
 // npx jest tests/user/get-by-role.test.ts
 
@@ -17,13 +17,13 @@ describe("GET /api/users", () => {
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const admin = await UserTestUtil.createAdmin();
+    const admin = await AdminTestModel.create();
     admin_email = admin!.email;
     admin_password = admin!.password;
   });
 
   afterAll(async () => {
-    await UserTestUtil.deleteAdmin();
+    await AdminTestModel.delete();
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();

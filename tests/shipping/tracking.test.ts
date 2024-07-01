@@ -1,9 +1,7 @@
 import supertest from "supertest";
-import { UserTestUtil } from "../user/user-test.util";
 import app from "../../src/apps/application.app";
 import pool from "../../src/apps/postgresql.app";
 import redis from "../../src/apps/redis.app";
-import { OrderTestUtil } from "../order/order-test.util";
 import {
   OrderStatus,
   OrderWithProducts,
@@ -13,6 +11,10 @@ import {
   orderShippingRedisClients,
 } from "../../src/queue/shipping.queue";
 import { nanoid } from "nanoid";
+import { AdminTestModel } from "../models/user/admin.test.model";
+import { UserTestModel } from "../models/user/user.test.model";
+import { OrderTestModel } from "../models/order/order.test.model";
+import { ProductTestModel } from "../models/product/product.test.model";
 
 // npx jest tests/shipping/tracking.test.ts
 
@@ -21,35 +23,45 @@ describe("GET /api/shippings/:shippingId/trackings", () => {
   let admin_password: string;
 
   let user_id: number;
+
+  let product: any;
+  let product_id: number;
+
   let order: OrderWithProducts;
   let order_id: string;
 
   const AUTHORIZATION_SECRET = process.env.AUTHORIZATION_SECRET;
 
   beforeAll(async () => {
-    const admin = await UserTestUtil.createAdmin();
+    const admin = await AdminTestModel.create();
     admin_email = admin!.email;
     admin_password = admin!.password;
 
-    const user = await UserTestUtil.createUser();
+    const user = await UserTestModel.create();
     user_id = user!.user_id;
+
+    product = await ProductTestModel.create();
+    product_id = product!.product_id;
   });
 
   beforeEach(async () => {
     order_id = nanoid();
 
-    const order_details = await OrderTestUtil.create(
+    const order_details = await OrderTestModel.create(
       user_id,
       order_id,
-      OrderStatus.PAID
+      OrderStatus.PAID,
+      product
     );
 
     order = order_details!;
   });
 
   afterAll(async () => {
-    await UserTestUtil.deleteAdmin();
-    await UserTestUtil.deleteUser();
+    await ProductTestModel.delete(product_id);
+    await AdminTestModel.delete();
+    await UserTestModel.delete();
+
     await pool.end();
     await redis.quit();
     await orderShippingQueue.close();
@@ -60,7 +72,7 @@ describe("GET /api/shippings/:shippingId/trackings", () => {
   });
 
   afterEach(async () => {
-    await OrderTestUtil.delete(order_id);
+    await OrderTestModel.delete(order_id);
   });
 
   it("tracking order shipping should be successful", async () => {

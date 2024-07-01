@@ -27,16 +27,4 @@ export class ReviewTestSubModel {
       throw new Error(`review test sub model insert: ${error.message}`);
     }
   }
-
-  // static async delete(client: PoolClient, user_id: number, product_id: number) {
-  //   try {
-  //     let query = `
-  //     DELETE FROM reviews WHERE user_id = $1 AND product_id = $2;
-  //     `;
-
-  //     await client.query(query, [user_id, product_id]);
-  //   } catch (error) {
-  //     throw new Error(`review test sub model delete: ${error.message}`);
-  //   }
-  // }
 }

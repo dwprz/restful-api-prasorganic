@@ -16,7 +16,7 @@ export class ReviewSubModel {
         (${parameterized_queries}, now())
     ON CONFLICT
         (user_id, product_id) DO NOTHING
-    RETURN *;
+    RETURNING *;
     `;
 
     const result = await client.query(query, field_values);

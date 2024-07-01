@@ -1,9 +1,9 @@
-import pool from "../../src/apps/postgresql.app";
+import pool from "../../../src/apps/postgresql.app";
 
-export class AuthTestUtil {
+export class OtpTestModel {
   private static pool = pool;
 
-  static async upsertOtpByEmail(email: string, otp: string) {
+  static async upsertByEmail(email: string, otp: string) {
     const client = await this.pool.connect();
     try {
       const query = `
@@ -18,13 +18,13 @@ export class AuthTestUtil {
 
       await client.query(query, [email, otp]);
     } catch (error: any) {
-      console.log("error from test utils: ", error.message);
+      console.log("otp test model upsert by email: ", error.message);
     } finally {
       client.release();
     }
   }
 
-  static async deleteOtpByEmail(email: string) {
+  static async deleteByEmail(email: string) {
     const client = await this.pool.connect();
     try {
       const query = `
@@ -32,7 +32,7 @@ export class AuthTestUtil {
 
       await client.query(query, [email]);
     } catch (error: any) {
-      console.log("error from test utils: ", error.message);
+      console.log("otp test model delete by email: ", error.message);
     } finally {
       client.release();
     }
