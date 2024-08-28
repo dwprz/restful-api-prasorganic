@@ -27,6 +27,7 @@
     "googleapis": "^137.1.0",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
+    "license-checker-rseidelsohn": "^4.3.0",
     "multer": "^1.4.5-lts.1",
     "mustache": "^4.2.0",
     "nanoid": "^3.3.7",
